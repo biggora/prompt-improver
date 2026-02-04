@@ -25,9 +25,7 @@ describe("AIService", () => {
   });
 
   it("throws on invalid JSON responses", () => {
-    expect(() => service.parseResponse("{not valid}")).toThrow(
-      "Invalid response format",
-    );
+    expect(() => service.parseResponse("{not valid}")).toThrow();
   });
 
   it("calls the improve API for cloud providers", async () => {

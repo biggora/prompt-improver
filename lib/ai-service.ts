@@ -6,6 +6,7 @@ import type {
   ValidateProviderResponse,
 } from "./types";
 import { SYSTEM_PROMPT } from "./prompts";
+import { parseAIResponse } from "./utils";
 
 // AI Provider Configuration
 export const AI_PROVIDERS: Record<string, AIProvider> = {
@@ -173,12 +174,7 @@ export class AIService {
   }
 
   parseResponse(text: string): ImprovePromptResponse {
-    const cleanJson = text.replace(/```json|```/g, "").trim();
-    try {
-      return JSON.parse(cleanJson);
-    } catch {
-      throw new Error("Invalid response format from AI provider");
-    }
+    return parseAIResponse(text);
   }
 
   // Method to get available providers and their models
