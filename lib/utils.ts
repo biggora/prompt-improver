@@ -6,7 +6,7 @@ import { ImprovePromptResponse } from "./types";
  */
 export function parseAIResponse(text: string): ImprovePromptResponse {
   // Remove markdown code fences
-  let cleaned = text.replace(/```json\s*|```\s*/g, "").trim();
+  const cleaned = text.replace(/```json\s*|```\s*/g, "").trim();
 
   // Find the JSON object boundaries
   const start = cleaned.indexOf("{");
@@ -21,7 +21,7 @@ export function parseAIResponse(text: string): ImprovePromptResponse {
 
   try {
     return JSON.parse(jsonStr);
-  } catch (e) {
+  } catch {
     // Try to fix common JSON issues
     // Replace unescaped newlines in string values
     const fixed = jsonStr

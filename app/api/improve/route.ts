@@ -5,7 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createZhipu } from "zhipu-ai-provider";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { SYSTEM_PROMPT } from "@/lib/prompts";
-import type { ImprovePromptRequest, ImprovePromptResponse } from "@/lib/types";
+import type { ImprovePromptRequest } from "@/lib/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type ProviderFactory = (apiKey: string) => any;

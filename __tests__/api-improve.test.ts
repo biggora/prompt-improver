@@ -14,7 +14,7 @@ describe("API Improve Route", () => {
     process.env.ANTHROPIC_API_KEY = "test-key";
   });
 
-  const createRequest = (body: any) => {
+  const createRequest = (body: Record<string, unknown>) => {
     return new NextRequest("http://localhost/api/improve", {
       method: "POST",
       body: JSON.stringify(body),
@@ -57,13 +57,13 @@ describe("API Improve Route", () => {
   });
 
   it("successfully improves a prompt", async () => {
-    (generateText as any).mockResolvedValue({
+    vi.mocked(generateText).mockResolvedValue({
       text: JSON.stringify({
         issues: ["i"],
         improvements: ["imp"],
         improvedPrompt: "better",
       }),
-    });
+    } as any);
 
     const req = createRequest({
       prompt: "good",
@@ -79,7 +79,7 @@ describe("API Improve Route", () => {
   });
 
   it("handles AI generation failure", async () => {
-    (generateText as any).mockRejectedValue(new Error("AI Hub down"));
+    vi.mocked(generateText).mockRejectedValue(new Error("AI Hub down"));
 
     const req = createRequest({
       prompt: "good",
