@@ -2,6 +2,8 @@
 
 A Next.js web application that helps users optimize their prompts using AI analysis. Transform your prompts for better results across different domains.
 
+<img width="3676" height="1726" alt="ui" src="https://github.com/user-attachments/assets/9d7d181f-50fe-498c-b6b7-4903a26527e0" />
+
 ## 🚀 Features
 
 - **Multi-Provider Support**: Choose from Anthropic Claude, OpenAI, Google Gemini, Zhipu AI, or local Ollama
