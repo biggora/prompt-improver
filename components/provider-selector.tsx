@@ -26,7 +26,7 @@ export default function ProviderSelector({
       : currentProvider?.models || [];
 
   return (
-    <div className="space-y-4 w-full">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
       {/* Provider Selection */}
       <div className="">
         <label className="text-sm font-medium text-slate-300 mb-2 block">

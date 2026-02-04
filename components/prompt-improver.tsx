@@ -192,26 +192,20 @@ export default function PromptImprover() {
 
         {/* AI Provider and Model Selection */}
         <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
-          <div className="grid md:grid-cols-2 gap-6">
-            <div>
-              <ProviderSelector
-                selectedProvider={selectedProvider}
-                selectedModel={selectedModel}
-                onProviderChange={handleProviderChange}
-                onModelChange={handleModelChange}
-                ollamaModels={ollamaModels}
-              />
+          <ProviderSelector
+            selectedProvider={selectedProvider}
+            selectedModel={selectedModel}
+            onProviderChange={handleProviderChange}
+            onModelChange={handleModelChange}
+            ollamaModels={ollamaModels}
+          />
+          {/* Loading indicator for Ollama models */}
+          {isLoadingModels && (
+            <div className="flex items-center gap-2 text-slate-400 text-sm mt-2">
+              <Loader2 size={14} className="animate-spin" />
+              Loading Ollama models...
             </div>
-            <div>
-              {/* Loading indicator for Ollama models */}
-              {isLoadingModels && (
-                <div className="flex items-center gap-2 text-slate-400 text-sm mt-2">
-                  <Loader2 size={14} className="animate-spin" />
-                  Loading Ollama models...
-                </div>
-              )}
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Domain Selection */}
