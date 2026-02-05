@@ -126,6 +126,9 @@ export default function PromptImprover({
   };
 
   useEffect(() => {
+    if (configuredProviders.ollamaBaseUrl) {
+      aiService.setOllamaBaseUrl(configuredProviders.ollamaBaseUrl as string);
+    }
     handleProviderChange(selectedProvider);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

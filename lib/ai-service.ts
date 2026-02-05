@@ -62,6 +62,13 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
 
 // AI Service class
 export class AIService {
+  private ollamaBaseUrl: string =
+    process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || "http://localhost:11434";
+
+  setOllamaBaseUrl(url: string) {
+    this.ollamaBaseUrl = url;
+  }
+
   async improvePrompt(
     prompt: string,
     domainNames: string | string[],
@@ -115,8 +122,7 @@ export class AIService {
       throw new Error("Please select an Ollama model");
     }
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || "http://localhost:11434";
+    const baseUrl = this.ollamaBaseUrl;
 
     try {
       const response = await fetch(`${baseUrl}/api/generate`, {
@@ -152,8 +158,7 @@ export class AIService {
   }
 
   async getOllamaModels(): Promise<{ id: string; name: string }[]> {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || "http://localhost:11434";
+    const baseUrl = this.ollamaBaseUrl;
 
     try {
       const response = await fetch(`${baseUrl}/api/tags`);

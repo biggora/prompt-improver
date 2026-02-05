@@ -51,4 +51,4 @@ export interface PromptStats {
   unique_domain_combinations: number;
 }
 
-export type ConfiguredProviders = Record<string, boolean>;
+export type ConfiguredProviders = Record<string, boolean | string>;

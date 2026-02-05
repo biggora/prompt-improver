@@ -44,6 +44,30 @@ cp .env.example .env
 pnpm run dev
 ```
 
+## 🐳 Docker Support
+
+The application is containerized for easy deployment and local testing.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+### Running with Docker
+
+1. **Configure Environment**: Ensure your `.env` file contains the necessary API keys.
+2. **Build and Start**:
+   ```bash
+   docker compose up -d --build
+   ```
+3. **Access the App**: Open `http://localhost:3000` in your browser.
+
+### Docker Commands
+
+- **Stop Containers**: `docker compose down`
+- **View Logs**: `docker compose logs -f`
+- **Rebuild**: `docker compose up -d --build`
+
 ## 🎯 Usage
 
 1. **Choose AI Provider**: Select from Anthropic Claude, OpenAI, Google Gemini, Zhipu AI, or local Ollama
@@ -201,6 +225,23 @@ prompt-improver/
 ## 📄 License
 
 This project is licensed under the ISC License - see the package.json file for details.
+
+## 🐳 Docker Deployment
+
+The project includes a multi-stage Docker configuration optimized for Next.js.
+
+### Core Files
+
+- `Dockerfile`: Multi-stage build process (deps, builder, runner).
+- `docker-compose.yml`: Service definition and port mapping.
+- `.dockerignore`: Excludes unnecessary files from the build context.
+
+### Build Details
+
+- **Base Image**: `node:22-alpine`
+- **PackageManager**: `pnpm`
+- **Output Mode**: `standalone` (for minimized image size)
+- **User**: Runs as non-root `nextjs` user for security.
 
 ## 🔗 Resources
 
