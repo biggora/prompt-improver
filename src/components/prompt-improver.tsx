@@ -215,7 +215,7 @@ export default function PromptImprover({
           <LanguageSwitcher />
         </div>
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4 shadow-lg shadow-violet-500/20">
+          <div className="inline-flex items-center gap-2 bg-primary text-white px-4 py-2 rounded-full text-sm font-medium mb-4 shadow-lg shadow-violet-500/20">
             <Sparkles size={16} />
             {t("common.title")}
           </div>
@@ -354,7 +354,7 @@ export default function PromptImprover({
                 !selectedModel ||
                 isLoading
               }
-              className="group flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-8 py-3.5 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:from-violet-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-violet-500/25 active:scale-95"
+              className="group flex items-center gap-2 bg-primary text-white px-8 py-3.5 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:from-violet-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-violet-500/25 active:scale-95"
             >
               {isLoading ? (
                 <>
