@@ -1,10 +1,7 @@
 "use client";
 
 import type { PromptHistoryRecord, PromptStats, PromptMode } from "./types";
-
-const DB_NAME = "PromptImproverDB";
-const DB_VERSION = 1;
-const STORE_NAME = "prompt_history";
+import { DB_NAME, DB_VERSION, STORE_NAME } from "./constants";
 
 let db: IDBDatabase | null = null;
 

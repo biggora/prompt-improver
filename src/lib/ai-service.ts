@@ -6,74 +6,17 @@ import type {
   ValidateProviderResponse,
   PromptMode,
 } from "./types";
-import { SYSTEM_PROMPT } from "./prompts";
 import { parseAIResponse } from "./utils";
-
-// Response Languages
-export const RESPONSE_LANGUAGES = [
-  { code: "en", name: "English", flag: "🇺🇸" },
-  { code: "ru", name: "Русский", flag: "🇷🇺" },
-  { code: "de", name: "Deutsch", flag: "🇩🇪" },
-  { code: "fr", name: "Français", flag: "🇫🇷" },
-  { code: "es", name: "Español", flag: "🇪🇸" },
-];
-
-// AI Provider Configuration
-export const AI_PROVIDERS: Record<string, AIProvider> = {
-  anthropic: {
-    id: "anthropic",
-    name: "Anthropic Claude",
-    models: [
-      { id: "claude-opus-4-5", name: "Claude 4.5 Opus" },
-      { id: "claude-sonnet-4-5", name: "Claude 4.5 Sonnet" },
-      { id: "claude-haiku-4-5", name: "Claude 4.5 Haiku" },
-    ],
-    defaultModel: "claude-haiku-4-5",
-  },
-  openai: {
-    id: "openai",
-    name: "OpenAI",
-    models: [
-      { id: "gpt-5.2-2025-12-11", name: "GPT-5.2" },
-      { id: "gpt-5-mini-2025-08-07", name: "GPT-5.2 Mini" },
-      { id: "gpt-5-nano-2025-08-07", name: "GPT-5.2 Nano" },
-      { id: "gpt-5-mini-2025-08-07", name: "GPT-5 Mini" },
-    ],
-    defaultModel: "gpt-5-nano-2025-08-07",
-  },
-  zhipu: {
-    id: "zhipu",
-    name: "Zhipu AI (Z.AI)",
-    models: [
-      { id: "glm-4.7", name: "GLM-4.7" },
-      { id: "glm-4.7-flash", name: "GLM-4 Flash" },
-      { id: "glm-4.7-flashx", name: "GLM-4 FlashX" },
-      { id: "glm-4.5-air", name: "GLM-4 Air" },
-    ],
-    defaultModel: "glm-4.7",
-  },
-  gemini: {
-    id: "gemini",
-    name: "Google Gemini",
-    models: [
-      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
-      { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro" },
-      { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash" },
-    ],
-    defaultModel: "gemini-2.5-flash",
-  },
-  ollama: {
-    id: "ollama",
-    name: "Ollama (Local)",
-    models: [], // Will be populated dynamically
-    defaultModel: "",
-  },
-};
+import {
+  AI_PROVIDERS,
+  SYSTEM_PROMPT,
+  OLLAMA_DEFAULT_BASE_URL,
+} from "./constants";
 
 // AI Service class
 export class AIService {
   private ollamaBaseUrl: string =
-    process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || "http://localhost:11434";
+    process.env.NEXT_PUBLIC_OLLAMA_BASE_URL || OLLAMA_DEFAULT_BASE_URL;
 
   setOllamaBaseUrl(url: string) {
     this.ollamaBaseUrl = url;

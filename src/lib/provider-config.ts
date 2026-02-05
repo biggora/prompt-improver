@@ -1,5 +1,6 @@
 import "server-only";
 import { ConfiguredProviders } from "./types";
+import { OLLAMA_DEFAULT_BASE_URL } from "./constants";
 
 export function getConfiguredProviders(): ConfiguredProviders {
   return {
@@ -11,6 +12,6 @@ export function getConfiguredProviders(): ConfiguredProviders {
     ollamaBaseUrl:
       process.env.NEXT_PUBLIC_OLLAMA_BASE_URL ||
       process.env.OLLAMA_BASE_URL ||
-      "http://localhost:11434",
+      OLLAMA_DEFAULT_BASE_URL,
   };
 }

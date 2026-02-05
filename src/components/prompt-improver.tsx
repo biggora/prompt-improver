@@ -11,7 +11,8 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
-import { aiService, AI_PROVIDERS, RESPONSE_LANGUAGES } from "@/lib/ai-service";
+import { aiService } from "@/lib/ai-service";
+import { AI_PROVIDERS, SUPPORTED_LANGUAGES, DOMAINS } from "@/lib/constants";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
 import LanguageSwitcher from "./language-switcher";
@@ -27,46 +28,6 @@ interface PromptImproverProps {
   configuredProviders: ConfiguredProviders;
 }
 
-interface Domain {
-  id: string;
-  labelKey: string;
-  icon: string;
-  descriptionKey: string;
-}
-
-const DOMAINS: Domain[] = [
-  {
-    id: "programming",
-    labelKey: "programming",
-    icon: "\uD83D\uDCBB",
-    descriptionKey: "programmingDesc",
-  },
-  {
-    id: "writing",
-    labelKey: "writing",
-    icon: "\u270D\uFE0F",
-    descriptionKey: "writingDesc",
-  },
-  {
-    id: "research",
-    labelKey: "research",
-    icon: "\uD83D\uDD2C",
-    descriptionKey: "researchDesc",
-  },
-  {
-    id: "business",
-    labelKey: "business",
-    icon: "\uD83D\uDCBC",
-    descriptionKey: "businessDesc",
-  },
-  {
-    id: "data",
-    labelKey: "data",
-    icon: "\uD83D\uDCCA",
-    descriptionKey: "dataDesc",
-  },
-];
-
 export default function PromptImprover({
   configuredProviders,
 }: PromptImproverProps) {
@@ -76,9 +37,7 @@ export default function PromptImprover({
   const availableProviderIds = Object.keys(AI_PROVIDERS).filter(
     (id) => configuredProviders[id],
   );
-  const initialProvider = availableProviderIds.includes("anthropic")
-    ? "anthropic"
-    : availableProviderIds[0] || "";
+  const initialProvider = availableProviderIds[0] || "";
 
   const [originalPrompt, setOriginalPrompt] = useState("");
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
@@ -165,7 +124,7 @@ export default function PromptImprover({
         selectedProvider,
         selectedModel,
         promptMode,
-        RESPONSE_LANGUAGES.find((l) => l.code === responseLanguage)?.name ||
+        SUPPORTED_LANGUAGES.find((l) => l.code === responseLanguage)?.name ||
           responseLanguage,
       );
       setResult(result);
@@ -252,7 +211,7 @@ export default function PromptImprover({
             {t("input.responseLanguage")}
           </label>
           <div className="flex flex-wrap gap-2">
-            {RESPONSE_LANGUAGES.map((lang) => (
+            {SUPPORTED_LANGUAGES.map((lang) => (
               <button
                 key={lang.code}
                 onClick={() => setResponseLanguage(lang.code)}

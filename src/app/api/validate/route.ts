@@ -3,6 +3,8 @@ import { generateText } from "ai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createZhipu } from "zhipu-ai-provider";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
+import { PROVIDER_KEY_NAMES, AI_PROVIDERS } from "@/lib/constants";
 import type {
   ValidateProviderRequest,
   ValidateProviderResponse,
@@ -15,22 +17,11 @@ const providerFactories: Record<string, ProviderFactory> = {
   anthropic: (apiKey) => createAnthropic({ apiKey }),
   openai: (apiKey) => createOpenAI({ apiKey }),
   zhipu: (apiKey) => createZhipu({ apiKey }),
-};
-
-const defaultModels: Record<string, string> = {
-  anthropic: "claude-sonnet-4-20250514",
-  openai: "gpt-4o",
-  zhipu: "glm-4-plus",
-};
-
-const providerKeyNames: Record<string, string> = {
-  anthropic: "ANTHROPIC_API_KEY",
-  openai: "OPENAI_API_KEY",
-  zhipu: "ZHIPU_API_KEY",
+  gemini: (apiKey) => createGoogleGenerativeAI({ apiKey }),
 };
 
 function getApiKey(providerId: string): string | null {
-  const keyName = providerKeyNames[providerId];
+  const keyName = PROVIDER_KEY_NAMES[providerId];
   return keyName ? process.env[keyName] || null : null;
 }
 
@@ -55,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     const apiKey = getApiKey(providerId);
     if (!apiKey) {
-      const keyName = providerKeyNames[providerId] || "API_KEY";
+      const keyName = PROVIDER_KEY_NAMES[providerId] || "API_KEY";
       return NextResponse.json(
         {
           error: `${providerId} API key is missing. Please set ${keyName} environment variable.`,
@@ -65,7 +56,7 @@ export async function POST(request: NextRequest) {
     }
 
     const provider = providerFactories[providerId](apiKey);
-    const model = defaultModels[providerId];
+    const model = AI_PROVIDERS[providerId]?.defaultModel;
     if (!model) {
       return NextResponse.json(
         { error: "No default model configured" },

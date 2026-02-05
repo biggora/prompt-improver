@@ -3,19 +3,12 @@
 import { useLocale } from "next-intl";
 import { useRouter, usePathname } from "next/navigation";
 import { Globe } from "lucide-react";
+import { SUPPORTED_LANGUAGES } from "@/lib/constants";
 
 export default function LanguageSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
-
-  const languages = [
-    { code: "en", name: "English", flag: "🇺🇸" },
-    { code: "ru", name: "Русский", flag: "🇷🇺" },
-    { code: "de", name: "Deutsch", flag: "🇩🇪" },
-    { code: "fr", name: "Français", flag: "🇫🇷" },
-    { code: "es", name: "Español", flag: "🇪🇸" },
-  ];
 
   const handleLanguageChange = (newLocale: string) => {
     // pathname looks like "/en/some-page"
@@ -37,7 +30,7 @@ export default function LanguageSwitcher() {
         onChange={(e) => handleLanguageChange(e.target.value)}
         className="bg-transparent text-sm text-foreground focus:outline-none cursor-pointer font-medium"
       >
-        {languages.map((lang) => (
+        {SUPPORTED_LANGUAGES.map((lang) => (
           <option
             key={lang.code}
             value={lang.code}

@@ -4,7 +4,7 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createZhipu } from "zhipu-ai-provider";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { SYSTEM_PROMPT } from "@/lib/prompts";
+import { SYSTEM_PROMPT, PROVIDER_KEY_NAMES } from "@/lib/constants";
 import type { ImprovePromptRequest } from "@/lib/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -17,21 +17,16 @@ const providerFactories: Record<string, ProviderFactory> = {
   gemini: (apiKey) => createGoogleGenerativeAI({ apiKey }),
 };
 
-const providerKeyNames: Record<string, string> = {
-  anthropic: "ANTHROPIC_API_KEY",
-  openai: "OPENAI_API_KEY",
-  zhipu: "ZHIPU_API_KEY",
-  gemini: "GEMINI_API_KEY",
-};
-
 function getApiKey(providerId: string): string | null {
-  const keyName = providerKeyNames[providerId];
+  const keyName = PROVIDER_KEY_NAMES[providerId];
   return keyName ? process.env[keyName] || null : null;
 }
 
 import { parseAIResponse } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let result: any = null;
   try {
     const body: ImprovePromptRequest = await request.json();
     const { prompt, domainNames, providerId, model } = body;
@@ -59,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     const apiKey = getApiKey(providerId);
     if (!apiKey) {
-      const keyName = providerKeyNames[providerId] || "API_KEY";
+      const keyName = PROVIDER_KEY_NAMES[providerId] || "API_KEY";
       return NextResponse.json(
         {
           error: `${providerId} API key is missing. Please set ${keyName} environment variable.`,
@@ -77,7 +72,10 @@ export async function POST(request: NextRequest) {
       ? `\nIMPORTANT: All text in the JSON response (issues, improvements, and improvedPrompt) MUST be in ${body.responseLanguage} language.`
       : "";
 
-    const result = await generateText({
+    const isReasoningModel =
+      model.includes("gpt-5") || model.includes("o1") || model.includes("o3");
+
+    result = await generateText({
       model: provider(model),
       system: SYSTEM_PROMPT + languageInstruction,
       messages: [
@@ -86,8 +84,8 @@ export async function POST(request: NextRequest) {
           content: `Domain(s): ${domainLabel}\nMode: ${body.mode || "standalone"}\n\nOriginal prompt to improve:\n${prompt}`,
         },
       ],
-      maxOutputTokens: 1500,
-      temperature: 0.7,
+      maxOutputTokens: 4000,
+      ...(isReasoningModel ? {} : { temperature: 0.7 }),
     });
 
     const parsed = parseAIResponse(result.text);
@@ -95,6 +93,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("API improve error:", error);
     const message = error instanceof Error ? error.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    // For debugging JSON issues
+    const debugInfo =
+      error instanceof Error && error.message.includes("JSON")
+        ? ` | Raw: ${result?.text?.substring(0, 500)}`
+        : "";
+    return NextResponse.json({ error: message + debugInfo }, { status: 500 });
   }
 }

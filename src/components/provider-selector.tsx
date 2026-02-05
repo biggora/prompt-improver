@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronDown, AlertTriangle } from "lucide-react";
-import { AI_PROVIDERS } from "@/lib/ai-service";
+import { AI_PROVIDERS } from "@/lib/constants";
 import type { AIModel, ConfiguredProviders } from "@/lib/types";
 
 interface ProviderSelectorProps {
