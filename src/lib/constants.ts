@@ -51,7 +51,7 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
     id: "zhipu",
     name: "Zhipu AI (Z.AI)",
     models: [
-      { id: "glm-4.7", name: "GLM-4.7 Plus" },
+      { id: "glm-4.7", name: "GLM-4.7" },
       { id: "glm-4.7-flash", name: "GLM-4.7 Flash" },
       { id: "glm-4-air", name: "GLM-4 Air" },
     ],
