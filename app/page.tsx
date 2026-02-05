@@ -1,5 +1,7 @@
 import PromptImprover from "@/components/prompt-improver";
+import { getConfiguredProviders } from "@/lib/provider-config";
 
 export default function Home() {
-  return <PromptImprover />;
+  const configuredProviders = getConfiguredProviders();
+  return <PromptImprover configuredProviders={configuredProviders} />;
 }

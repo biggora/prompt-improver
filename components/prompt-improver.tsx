@@ -13,7 +13,15 @@ import {
 import { aiService, AI_PROVIDERS } from "@/lib/ai-service";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
-import type { AIModel, ImprovePromptResponse } from "@/lib/types";
+import type {
+  AIModel,
+  ImprovePromptResponse,
+  ConfiguredProviders,
+} from "@/lib/types";
+
+interface PromptImproverProps {
+  configuredProviders: ConfiguredProviders;
+}
 
 interface Domain {
   id: string;
@@ -55,12 +63,22 @@ const DOMAINS: Domain[] = [
   },
 ];
 
-export default function PromptImprover() {
+export default function PromptImprover({
+  configuredProviders,
+}: PromptImproverProps) {
+  // Find the first available provider
+  const availableProviderIds = Object.keys(AI_PROVIDERS).filter(
+    (id) => configuredProviders[id],
+  );
+  const initialProvider = availableProviderIds.includes("anthropic")
+    ? "anthropic"
+    : availableProviderIds[0] || "";
+
   const [originalPrompt, setOriginalPrompt] = useState("");
   const [selectedDomains, setSelectedDomains] = useState<string[]>([]);
-  const [selectedProvider, setSelectedProvider] = useState("anthropic");
+  const [selectedProvider, setSelectedProvider] = useState(initialProvider);
   const [selectedModel, setSelectedModel] = useState(
-    AI_PROVIDERS.anthropic.defaultModel,
+    initialProvider ? AI_PROVIDERS[initialProvider]?.defaultModel : "",
   );
   const [ollamaModels, setOllamaModels] = useState<AIModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -198,6 +216,7 @@ export default function PromptImprover() {
             onProviderChange={handleProviderChange}
             onModelChange={handleModelChange}
             ollamaModels={ollamaModels}
+            configuredProviders={configuredProviders}
           />
           {/* Loading indicator for Ollama models */}
           {isLoadingModels && (
