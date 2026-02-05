@@ -31,7 +31,8 @@
     "label": "Original Prompt",
     "placeholder": "Paste your prompt here...",
     "improveBtn": "Improve Prompt",
-    "improving": "Improving..."
+    "improving": "Improving...",
+    "responseLanguage": "Response Language"
   },
   "results": {
     "issues": "Issues Found",

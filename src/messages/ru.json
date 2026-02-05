@@ -31,7 +31,8 @@
     "label": "Исходный промпт",
     "placeholder": "Вставьте ваш промпт здесь...",
     "improveBtn": "Улучшить промпт",
-    "improving": "Улучшение..."
+    "improving": "Улучшение...",
+    "responseLanguage": "Язык ответа"
   },
   "results": {
     "issues": "Найденные проблемы",

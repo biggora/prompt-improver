@@ -31,7 +31,8 @@
     "label": "Prompt d'origine",
     "placeholder": "Collez votre prompt ici...",
     "improveBtn": "Améliorer le prompt",
-    "improving": "Amélioration..."
+    "improving": "Amélioration...",
+    "responseLanguage": "Langue de réponse"
   },
   "results": {
     "issues": "Problèmes trouvés",

@@ -31,7 +31,8 @@
     "label": "Originaler Prompt",
     "placeholder": "Fügen Sie Ihren Prompt hier ein...",
     "improveBtn": "Prompt verbessern",
-    "improving": "Verbesserung läuft..."
+    "improving": "Verbesserung läuft...",
+    "responseLanguage": "Antwortsprache"
   },
   "results": {
     "issues": "Gefundene Probleme",

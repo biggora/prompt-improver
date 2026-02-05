@@ -9,6 +9,15 @@ import type {
 import { SYSTEM_PROMPT } from "./prompts";
 import { parseAIResponse } from "./utils";
 
+// Response Languages
+export const RESPONSE_LANGUAGES = [
+  { code: "en", name: "English", flag: "🇺🇸" },
+  { code: "ru", name: "Русский", flag: "🇷🇺" },
+  { code: "de", name: "Deutsch", flag: "🇩🇪" },
+  { code: "fr", name: "Français", flag: "🇫🇷" },
+  { code: "es", name: "Español", flag: "🇪🇸" },
+];
+
 // AI Provider Configuration
 export const AI_PROVIDERS: Record<string, AIProvider> = {
   anthropic: {
@@ -76,6 +85,7 @@ export class AIService {
     providerId: string,
     model: string,
     mode: PromptMode = "standalone",
+    responseLanguage?: string,
   ): Promise<ImprovePromptResponse> {
     if (providerId === "ollama") {
       return await this.improvePromptWithOllama(
@@ -83,6 +93,7 @@ export class AIService {
         domainNames,
         model,
         mode,
+        responseLanguage,
       );
     }
 
@@ -98,6 +109,7 @@ export class AIService {
           providerId,
           model,
           mode,
+          responseLanguage,
         }),
       });
 
@@ -126,6 +138,7 @@ export class AIService {
     domainNames: string | string[],
     model?: string,
     mode: PromptMode = "standalone",
+    responseLanguage?: string,
   ): Promise<ImprovePromptResponse> {
     if (!model) {
       throw new Error("Please select an Ollama model");
@@ -141,7 +154,7 @@ export class AIService {
         },
         body: JSON.stringify({
           model,
-          prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\nMode: ${mode}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
+          prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\nMode: ${mode}${responseLanguage ? `\nLanguage: ${responseLanguage}` : ""}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
           stream: false,
           options: {
             temperature: 0.7,

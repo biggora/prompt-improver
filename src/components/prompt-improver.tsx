@@ -10,8 +10,8 @@ import {
   Lightbulb,
   ArrowRight,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
-import { aiService, AI_PROVIDERS } from "@/lib/ai-service";
+import { useTranslations, useLocale } from "next-intl";
+import { aiService, AI_PROVIDERS, RESPONSE_LANGUAGES } from "@/lib/ai-service";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
 import LanguageSwitcher from "./language-switcher";
@@ -86,6 +86,8 @@ export default function PromptImprover({
   const [selectedModel, setSelectedModel] = useState(
     initialProvider ? AI_PROVIDERS[initialProvider]?.defaultModel : "",
   );
+  const locale = useLocale();
+  const [responseLanguage, setResponseLanguage] = useState(locale);
   const [promptMode, setPromptMode] = useState<PromptMode>("standalone");
   const [ollamaModels, setOllamaModels] = useState<AIModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -163,6 +165,8 @@ export default function PromptImprover({
         selectedProvider,
         selectedModel,
         promptMode,
+        RESPONSE_LANGUAGES.find((l) => l.code === responseLanguage)?.name ||
+          responseLanguage,
       );
       setResult(result);
 
@@ -240,6 +244,29 @@ export default function PromptImprover({
               {t("provider.ollamaModels")}
             </div>
           )}
+        </div>
+
+        {/* Response Language Selection */}
+        <div className="bg-card/50 rounded-2xl p-6 mb-6 border border-border backdrop-blur-sm">
+          <label className="text-sm font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">
+            {t("input.responseLanguage")}
+          </label>
+          <div className="flex flex-wrap gap-2">
+            {RESPONSE_LANGUAGES.map((lang) => (
+              <button
+                key={lang.code}
+                onClick={() => setResponseLanguage(lang.code)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-200 border ${
+                  responseLanguage === lang.code
+                    ? "bg-primary/20 border-primary text-primary shadow-inner"
+                    : "bg-muted/30 border-border text-muted-foreground hover:border-slate-400 dark:hover:border-slate-600"
+                }`}
+              >
+                <span>{lang.flag}</span>
+                <span className="text-sm font-medium">{lang.name}</span>
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Domain Selection */}

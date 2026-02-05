@@ -17,6 +17,7 @@ export interface ImprovePromptRequest {
   providerId: string;
   model: string;
   mode?: PromptMode;
+  responseLanguage?: string;
 }
 
 export interface ImprovePromptResponse {

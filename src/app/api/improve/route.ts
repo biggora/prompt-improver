@@ -73,9 +73,13 @@ export async function POST(request: NextRequest) {
       ? domainNames.join(", ")
       : domainNames;
 
+    const languageInstruction = body.responseLanguage
+      ? `\nIMPORTANT: All text in the JSON response (issues, improvements, and improvedPrompt) MUST be in ${body.responseLanguage} language.`
+      : "";
+
     const result = await generateText({
       model: provider(model),
-      system: SYSTEM_PROMPT,
+      system: SYSTEM_PROMPT + languageInstruction,
       messages: [
         {
           role: "user",
