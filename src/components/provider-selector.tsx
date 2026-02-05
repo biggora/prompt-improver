@@ -38,10 +38,10 @@ export default function ProviderSelector({
           <AlertTriangle size={20} />
         </div>
         <div>
-          <h3 className="text-amber-400 font-semibold mb-1">
+          <h3 className="text-amber-500 dark:text-amber-400 font-semibold mb-1">
             No AI Providers Configured
           </h3>
-          <p className="text-slate-400 text-sm leading-relaxed">
+          <p className="text-muted-foreground text-sm leading-relaxed">
             Please set at least one API key in your <code>.env</code> file
             (e.g., <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>)
             or ensure Ollama is configured to start improving prompts.
@@ -55,14 +55,14 @@ export default function ProviderSelector({
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
       {/* Provider Selection */}
       <div className="">
-        <label className="text-sm font-medium text-slate-300 mb-2 block">
+        <label className="text-sm font-medium text-muted-foreground mb-2 block">
           AI Provider
         </label>
         <div className="relative">
           <select
             value={selectedProvider}
             onChange={(e) => onProviderChange(e.target.value)}
-            className="w-full bg-slate-900/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent cursor-pointer"
+            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer"
           >
             {availableProviders.map((provider) => (
               <option key={provider.id} value={provider.id}>
@@ -72,14 +72,14 @@ export default function ProviderSelector({
           </select>
           <ChevronDown
             size={18}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
           />
         </div>
       </div>
 
       {/* Model Selection */}
       <div className="">
-        <label className="text-sm font-medium text-slate-300 mb-2 block w-full">
+        <label className="text-sm font-medium text-muted-foreground mb-2 block w-full">
           Model
         </label>
         <div className="relative">
@@ -89,7 +89,7 @@ export default function ProviderSelector({
             disabled={
               selectedProvider === "ollama" && ollamaModels.length === 0
             }
-            className="w-full bg-slate-900/50 border border-slate-600 rounded-xl px-4 py-3 text-slate-200 appearance-none focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {selectedProvider === "ollama" && ollamaModels.length === 0 ? (
               <option value="">
@@ -110,12 +110,12 @@ export default function ProviderSelector({
           </select>
           <ChevronDown
             size={18}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 pointer-events-none"
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground pointer-events-none"
           />
         </div>
 
         {/* Provider-specific hints */}
-        <div className="mt-2 text-xs text-slate-400">
+        <div className="mt-2 text-xs text-muted-foreground">
           {selectedProvider === "anthropic" && (
             <p>Requires Anthropic API key</p>
           )}

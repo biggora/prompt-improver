@@ -15,6 +15,7 @@ import { aiService, AI_PROVIDERS } from "@/lib/ai-service";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
 import LanguageSwitcher from "./language-switcher";
+import ThemeToggle from "./theme-toggle";
 import type {
   AIModel,
   ImprovePromptResponse,
@@ -202,10 +203,11 @@ export default function PromptImprover({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+    <div className="min-h-screen bg-background transition-colors duration-300 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
-        <div className="flex justify-end mb-4">
+        <div className="flex justify-end items-center gap-3 mb-4">
+          <ThemeToggle />
           <LanguageSwitcher />
         </div>
         <div className="text-center mb-8">
@@ -213,14 +215,16 @@ export default function PromptImprover({
             <Sparkles size={16} />
             {t("common.title")}
           </div>
-          <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-foreground mb-2 tracking-tight">
             {t("common.transformPrompts")}
           </h1>
-          <p className="text-slate-400 text-lg">{t("common.subtitle")}</p>
+          <p className="text-muted-foreground text-lg">
+            {t("common.subtitle")}
+          </p>
         </div>
 
         {/* AI Provider and Model Selection */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
+        <div className="bg-card/50 rounded-2xl p-6 mb-6 border border-border backdrop-blur-sm">
           <ProviderSelector
             selectedProvider={selectedProvider}
             selectedModel={selectedModel}
@@ -239,8 +243,8 @@ export default function PromptImprover({
         </div>
 
         {/* Domain Selection */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
-          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+        <div className="bg-card/50 rounded-2xl p-6 mb-6 border border-border backdrop-blur-sm">
+          <label className="text-sm font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">
             {t("domains.label")}
           </label>
           <div className="flex flex-wrap gap-3">
@@ -250,8 +254,8 @@ export default function PromptImprover({
                 onClick={() => toggleDomain(domain.id)}
                 className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${
                   selectedDomains.includes(domain.id)
-                    ? "bg-violet-500/20 border-violet-500 text-violet-300 border-2 shadow-inner"
-                    : "bg-slate-700/50 border-slate-600 text-slate-300 border hover:border-slate-500 hover:bg-slate-700"
+                    ? "bg-primary/20 border-primary text-primary border-2 shadow-inner"
+                    : "bg-muted/50 border-border text-muted-foreground border hover:border-slate-400 dark:hover:border-slate-500 hover:bg-muted"
                 }`}
                 title={t(`domains.${domain.descriptionKey}`)}
               >
@@ -265,8 +269,8 @@ export default function PromptImprover({
         </div>
 
         {/* Analysis Mode Toggle */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
-          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+        <div className="bg-card/50 rounded-2xl p-6 mb-6 border border-border backdrop-blur-sm">
+          <label className="text-sm font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">
             {t("modes.label")}
           </label>
           <div className="flex gap-4">
@@ -274,8 +278,8 @@ export default function PromptImprover({
               onClick={() => setPromptMode("standalone")}
               className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                 promptMode === "standalone"
-                  ? "bg-violet-500/10 border-violet-500 text-violet-300"
-                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500 hover:bg-slate-700"
+                  ? "bg-primary/10 border-primary text-primary"
+                  : "bg-muted/50 border-border text-muted-foreground hover:border-slate-400 dark:hover:border-slate-500 hover:bg-muted"
               }`}
             >
               <span className="font-bold text-sm uppercase tracking-wide">
@@ -289,8 +293,8 @@ export default function PromptImprover({
               onClick={() => setPromptMode("continuation")}
               className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                 promptMode === "continuation"
-                  ? "bg-violet-500/10 border-violet-500 text-violet-300"
-                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500 hover:bg-slate-700"
+                  ? "bg-primary/10 border-primary text-primary"
+                  : "bg-muted/50 border-border text-muted-foreground hover:border-slate-400 dark:hover:border-slate-500 hover:bg-muted"
               }`}
             >
               <span className="font-bold text-sm uppercase tracking-wide">
@@ -304,15 +308,15 @@ export default function PromptImprover({
         </div>
 
         {/* Input */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
-          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+        <div className="bg-card/50 rounded-2xl p-6 mb-6 border border-border backdrop-blur-sm">
+          <label className="text-sm font-semibold text-muted-foreground mb-3 block uppercase tracking-wider">
             {t("input.label")}
           </label>
           <textarea
             value={originalPrompt}
             onChange={(e) => setOriginalPrompt(e.target.value)}
             placeholder={t("input.placeholder")}
-            className="w-full h-44 bg-slate-900/50 border border-slate-600 rounded-xl p-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none transition-all shadow-inner"
+            className="w-full h-44 bg-background border border-border rounded-xl p-4 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none transition-all shadow-inner"
           />
           <div className="flex justify-end mt-4">
             <button
@@ -362,7 +366,7 @@ export default function PromptImprover({
                   {result.issues?.map((issue, i) => (
                     <li
                       key={i}
-                      className="text-slate-300 text-sm flex items-start gap-2 leading-snug"
+                      className="text-foreground/90 text-sm flex items-start gap-2 leading-snug"
                     >
                       <span className="text-amber-500 mt-1 font-bold">
                         &bull;
@@ -381,7 +385,7 @@ export default function PromptImprover({
                   {result.improvements?.map((imp, i) => (
                     <li
                       key={i}
-                      className="text-slate-300 text-sm flex items-start gap-2 leading-snug"
+                      className="text-foreground/90 text-sm flex items-start gap-2 leading-snug"
                     >
                       <span className="text-emerald-500 mt-0.5 font-bold">
                         &#10003;
@@ -394,15 +398,15 @@ export default function PromptImprover({
             </div>
 
             {/* Improved Prompt */}
-            <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm shadow-xl">
+            <div className="bg-card/50 rounded-2xl p-6 border border-border backdrop-blur-sm shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-violet-400 font-bold uppercase text-xs tracking-widest">
+                <div className="flex items-center gap-2 text-primary font-bold uppercase text-xs tracking-widest">
                   <ArrowRight size={18} />
                   {t("results.improvedPrompt")}
                 </div>
                 <button
                   onClick={copyToClipboard}
-                  className="group flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-all bg-slate-700/50 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600"
+                  className="group flex items-center gap-2 text-sm text-foreground/80 hover:text-foreground transition-all bg-muted/50 hover:bg-muted px-4 py-2 rounded-lg border border-border"
                 >
                   {copied ? (
                     <>
@@ -420,8 +424,8 @@ export default function PromptImprover({
                   )}
                 </button>
               </div>
-              <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-600 shadow-inner">
-                <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
+              <div className="bg-background rounded-xl p-5 border border-border shadow-inner">
+                <p className="text-foreground whitespace-pre-wrap leading-relaxed">
                   {result.improvedPrompt}
                 </p>
               </div>

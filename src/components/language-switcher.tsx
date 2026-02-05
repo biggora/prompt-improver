@@ -27,21 +27,21 @@ export default function LanguageSwitcher() {
   };
 
   return (
-    <div className="flex items-center gap-2 bg-slate-800/50 rounded-xl px-3 py-1.5 border border-slate-700 backdrop-blur-sm shadow-sm group hover:border-slate-600 transition-all">
+    <div className="flex items-center gap-2 bg-card/50 rounded-xl px-3 py-1.5 border border-border backdrop-blur-sm shadow-sm group hover:border-slate-400 dark:hover:border-slate-600 transition-all">
       <Globe
         size={16}
-        className="text-slate-400 group-hover:text-violet-400 transition-colors"
+        className="text-muted-foreground group-hover:text-primary transition-colors"
       />
       <select
         value={locale}
         onChange={(e) => handleLanguageChange(e.target.value)}
-        className="bg-transparent text-sm text-slate-300 focus:outline-none cursor-pointer font-medium"
+        className="bg-transparent text-sm text-foreground focus:outline-none cursor-pointer font-medium"
       >
         {languages.map((lang) => (
           <option
             key={lang.code}
             value={lang.code}
-            className="bg-slate-800 text-slate-200"
+            className="bg-card text-foreground"
           >
             {lang.flag} {lang.name}
           </option>

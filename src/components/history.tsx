@@ -138,17 +138,17 @@ export default function PromptHistory({
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex animate-in fade-in duration-300">
-      <div className="bg-slate-900 w-full max-w-4xl h-full overflow-hidden flex flex-col shadow-2xl border-l border-slate-700 animate-in slide-in-from-right duration-500">
+      <div className="bg-background w-full max-w-4xl h-full overflow-hidden flex flex-col shadow-2xl border-l border-border animate-in slide-in-from-right duration-500">
         {/* Header */}
-        <div className="bg-slate-800/80 border-b border-slate-700 p-6 backdrop-blur-sm">
+        <div className="bg-card/80 border-b border-border p-6 backdrop-blur-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-extrabold text-white flex items-center gap-3">
-              <History size={28} className="text-violet-400" />
+            <h2 className="text-2xl font-extrabold text-foreground flex items-center gap-3">
+              <History size={28} className="text-primary" />
               {t("title")}
             </h2>
             <button
               onClick={onToggle}
-              className="p-2 rounded-lg bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-95"
+              className="p-2 rounded-lg bg-accent text-muted-foreground hover:text-foreground hover:bg-accent/80 transition-all active:scale-95"
             >
               <EyeOff size={24} />
             </button>
@@ -167,7 +167,7 @@ export default function PromptHistory({
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 placeholder={t("search")}
-                className="w-full bg-slate-900/50 border border-slate-600 rounded-xl pl-11 pr-4 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
+                className="w-full bg-background border border-border rounded-xl pl-11 pr-4 py-2.5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
             </div>
             <button
@@ -188,11 +188,11 @@ export default function PromptHistory({
             </div>
           ) : history.length === 0 ? (
             <div className="text-center py-20 animate-in fade-in slide-in-from-bottom-4">
-              <div className="bg-slate-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-700">
-                <History size={40} className="text-slate-600" />
+              <div className="bg-muted w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-border">
+                <History size={40} className="text-muted-foreground" />
               </div>
-              <p className="text-slate-300 text-xl font-bold">{t("empty")}</p>
-              <p className="text-slate-500 mt-2 max-w-xs mx-auto">
+              <p className="text-foreground text-xl font-bold">{t("empty")}</p>
+              <p className="text-muted-foreground mt-2 max-w-xs mx-auto">
                 {t("emptyDesc")}
               </p>
             </div>
@@ -201,23 +201,29 @@ export default function PromptHistory({
               {history.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-slate-800/40 rounded-2xl border border-slate-700/50 overflow-hidden hover:border-slate-600 transition-all hover:bg-slate-800/60 shadow-sm"
+                  className="bg-card/40 rounded-2xl border border-border overflow-hidden hover:border-slate-400 dark:hover:border-slate-600 transition-all hover:bg-card/60 shadow-sm"
                 >
                   <div className="p-5">
                     {/* Header */}
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
-                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md">
-                            <Calendar size={14} className="text-violet-400" />
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-muted-foreground uppercase tracking-widest mb-1">
+                          <span className="flex items-center gap-1.5 bg-accent/50 px-2 py-1 rounded-md">
+                            <Calendar size={14} className="text-primary" />
                             {formatDate(item.created_at)}
                           </span>
-                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md">
-                            <Cpu size={14} className="text-indigo-400" />
+                          <span className="flex items-center gap-1.5 bg-accent/50 px-2 py-1 rounded-md">
+                            <Cpu
+                              size={14}
+                              className="text-indigo-500 dark:text-indigo-400"
+                            />
                             {item.provider}
                           </span>
-                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md max-w-[200px] truncate">
-                            <Hash size={14} className="text-emerald-400" />
+                          <span className="flex items-center gap-1.5 bg-accent/50 px-2 py-1 rounded-md max-w-[200px] truncate">
+                            <Hash
+                              size={14}
+                              className="text-emerald-600 dark:text-emerald-400"
+                            />
                             {Array.isArray(item.domains)
                               ? item.domains.join(", ")
                               : item.domains}
@@ -229,25 +235,28 @@ export default function PromptHistory({
                           onClick={() =>
                             handleCopy(item.improved_prompt, `copy-${item.id}`)
                           }
-                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-90"
+                          className="bg-accent/50 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all active:scale-90"
                           title="Copy improved prompt"
                         >
                           {copiedId === `copy-${item.id}` ? (
-                            <Check size={18} className="text-emerald-400" />
+                            <Check
+                              size={18}
+                              className="text-emerald-600 dark:text-emerald-400"
+                            />
                           ) : (
                             <Copy size={18} />
                           )}
                         </button>
                         <button
                           onClick={() => item.id && handleDelete(item.id)}
-                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-90"
+                          className="bg-accent/50 p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all active:scale-90"
                           title="Delete"
                         >
                           <Trash2 size={18} />
                         </button>
                         <button
                           onClick={() => item.id && toggleExpanded(item.id)}
-                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-90"
+                          className="bg-accent/50 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all active:scale-90"
                           title={
                             item.id && expandedItems.has(item.id)
                               ? t("showLess")
@@ -265,22 +274,22 @@ export default function PromptHistory({
 
                     {/* Content Preview */}
                     <div className="space-y-4">
-                      <div className="bg-slate-900/40 p-3 rounded-xl border border-slate-700/30 shadow-inner">
-                        <p className="text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">
+                      <div className="bg-muted p-3 rounded-xl border border-border shadow-inner">
+                        <p className="text-[10px] font-bold text-muted-foreground mb-1.5 uppercase tracking-widest">
                           {t("originalLabel")}
                         </p>
-                        <p className="text-slate-300 text-sm leading-relaxed">
+                        <p className="text-foreground/90 text-sm leading-relaxed">
                           {item.id && expandedItems.has(item.id)
                             ? item.original_prompt
                             : truncateText(item.original_prompt)}
                         </p>
                       </div>
 
-                      <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 shadow-inner">
-                        <p className="text-[10px] font-bold text-violet-400 mb-1.5 uppercase tracking-widest">
+                      <div className="bg-muted p-3 rounded-xl border border-border shadow-inner">
+                        <p className="text-[10px] font-bold text-primary mb-1.5 uppercase tracking-widest">
                           {t("improvedLabel")}
                         </p>
-                        <p className="text-slate-200 text-sm font-medium leading-relaxed">
+                        <p className="text-foreground text-sm font-medium leading-relaxed">
                           {item.id && expandedItems.has(item.id)
                             ? item.improved_prompt
                             : truncateText(item.improved_prompt)}
