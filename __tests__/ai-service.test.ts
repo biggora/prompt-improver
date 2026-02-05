@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { AIService, AI_PROVIDERS } from "@/lib/ai-service";
+import { AIService } from "@/lib/ai-service";
+import { AI_PROVIDERS } from "@/lib/constants";
 
 describe("AIService", () => {
   let service: AIService;

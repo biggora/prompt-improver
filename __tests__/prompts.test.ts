@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { SYSTEM_PROMPT } from "@/lib/prompts";
+import { SYSTEM_PROMPT } from "@/lib/constants";
 
 describe("SYSTEM_PROMPT", () => {
   it("contains all required domains", () => {
