@@ -137,13 +137,13 @@ NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
 
 #### 🤖 Anthropic Claude
 
-- **Models**: Claude Sonnet 4, Claude 3.5 Sonnet, Claude 3.5 Haiku
+- **Models**: Claude Opus 4.5, Claude 4.5 Sonnet, Claude 4.5 Haiku
 - **Requirements**: Anthropic API key
 - **Setup**: Get API key from [Anthropic Console](https://console.anthropic.com/)
 
 #### 🧠 OpenAI
 
-- **Models**: GPT-4o, GPT-4o Mini, GPT-4 Turbo, GPT-3.5 Turbo
+- **Models**: GPT-5.2, GPT-5.2 Mini, GPT-5.2 Nano, GPT-5
 - **Requirements**: OpenAI API key
 - **Setup**: Get API key from [OpenAI Platform](https://platform.openai.com/)
 
@@ -155,7 +155,7 @@ NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
 
 #### 🌐 Zhipu AI (Z.AI)
 
-- **Models**: GLM-4 Plus, GLM-4, GLM-4 Flash, GLM-4 Air
+- **Models**: GLM-4.7, GLM-4.7 Flash, GLM-4.7 FlashX, GLM-4.5 Air
 - **Requirements**: Zhipu API key
 - **Setup**: Get API key from [Zhipu AI Platform](https://open.bigmodel.cn/)
 
@@ -204,15 +204,6 @@ prompt-improver/
 - Copy-to-clipboard functionality
 - Responsive design for all devices
 - Error handling and loading states
-
-### 📋 Planned
-
-- [ ] Unit and integration tests
-- [ ] E2E testing
-- [ ] Enhanced rate limiting
-- [ ] Advanced input validation
-- [ ] Export/import prompt history
-- [ ] API key validation UI
 
 ## 🤝 Contributing
 
