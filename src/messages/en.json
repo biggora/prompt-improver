@@ -1,0 +1,69 @@
+{
+  "common": {
+    "title": "Prompt Improver",
+    "transformPrompts": "Transform Your Prompts",
+    "subtitle": "Choose your AI provider, select domains, paste your prompt, get an optimized version",
+    "loading": "Loading...",
+    "copy": "Copy",
+    "copied": "Copied!"
+  },
+  "domains": {
+    "label": "Select Domain(s)",
+    "programming": "Programming",
+    "writing": "Writing",
+    "research": "Research",
+    "business": "Business",
+    "data": "Data Analysis",
+    "programmingDesc": "Code, debugging, architecture",
+    "writingDesc": "Creative, copywriting, content",
+    "researchDesc": "Analysis, papers, investigation",
+    "businessDesc": "Strategy, planning, professional",
+    "dataDesc": "Statistics, visualization, insights"
+  },
+  "modes": {
+    "label": "Analysis Mode",
+    "standalone": "Standalone",
+    "standaloneDesc": "Complete new request engineering",
+    "continuation": "Continuation",
+    "continuationDesc": "Follow-up/refinement of previous content"
+  },
+  "input": {
+    "label": "Original Prompt",
+    "placeholder": "Paste your prompt here...",
+    "improveBtn": "Improve Prompt",
+    "improving": "Improving..."
+  },
+  "results": {
+    "issues": "Issues Found",
+    "improvements": "Improvements Made",
+    "improvedPrompt": "Improved Prompt"
+  },
+  "history": {
+    "title": "Prompt History",
+    "search": "Search prompts...",
+    "searchBtn": "Search",
+    "loading": "Loading history...",
+    "empty": "No prompt history yet",
+    "emptyDesc": "Start improving prompts to see them here",
+    "showMore": "Show more",
+    "showLess": "Show less",
+    "deleteConfirm": "Are you sure you want to delete this prompt?",
+    "originalLabel": "ORIGINAL PROMPT",
+    "improvedLabel": "IMPROVED PROMPT"
+  },
+  "provider": {
+    "label": "AI Provider",
+    "model": "Model",
+    "noProviders": "No AI Providers Configured",
+    "noProvidersDesc": "Please set at least one API key in your .env file or ensure Ollama is configured.",
+    "loadingModels": "Loading models...",
+    "ollamaModels": "Loading Ollama models...",
+    "noModels": "No models available (check Ollama connection)",
+    "selectModel": "Select a model...",
+    "anthropicHint": "Requires Anthropic API key",
+    "openaiHint": "Requires OpenAI API key",
+    "zhipuHint": "Requires Zhipu API key",
+    "geminiHint": "Requires Gemini API key",
+    "ollamaHint": "Requires local Ollama installation"
+  }
+}

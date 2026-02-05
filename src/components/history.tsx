@@ -12,7 +12,9 @@ import {
   Hash,
   Eye,
   EyeOff,
+  Loader2,
 } from "lucide-react";
+import { useTranslations, useLocale } from "next-intl";
 import type { PromptHistoryRecord } from "@/lib/types";
 
 interface PromptHistoryProps {
@@ -25,6 +27,8 @@ export default function PromptHistory({
   isVisible,
   onToggle,
 }: PromptHistoryProps) {
+  const t = useTranslations("history");
+  const locale = useLocale();
   const [history, setHistory] = useState<PromptHistoryRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
@@ -79,7 +83,7 @@ export default function PromptHistory({
   };
 
   const handleDelete = async (id: number) => {
-    if (!confirm("Are you sure you want to delete this prompt?")) return;
+    if (!confirm(t("deleteConfirm"))) return;
 
     try {
       const { deletePrompt } = await import("@/lib/database");
@@ -103,12 +107,16 @@ export default function PromptHistory({
   };
 
   const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleString("en-US", {
-      month: "short",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    try {
+      return new Date(dateString).toLocaleString(locale, {
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return dateString;
+    }
   };
 
   const truncateText = (text: string, maxLength = 150) => {
@@ -120,8 +128,8 @@ export default function PromptHistory({
     return (
       <button
         onClick={onToggle}
-        className="fixed bottom-6 right-6 bg-violet-500 hover:bg-violet-600 text-white p-4 rounded-full shadow-lg transition-all z-40"
-        title="Show History"
+        className="fixed bottom-6 right-6 bg-violet-500 hover:bg-violet-600 text-white p-4 rounded-full shadow-lg transition-all z-40 transform hover:scale-110 active:scale-95"
+        title={t("title")}
       >
         <History size={20} />
       </button>
@@ -129,147 +137,150 @@ export default function PromptHistory({
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex">
-      <div className="bg-slate-900 w-full max-w-4xl h-full overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-50 flex animate-in fade-in duration-300">
+      <div className="bg-slate-900 w-full max-w-4xl h-full overflow-hidden flex flex-col shadow-2xl border-l border-slate-700 animate-in slide-in-from-right duration-500">
         {/* Header */}
-        <div className="bg-slate-800 border-b border-slate-700 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-2">
-              <History size={24} />
-              Prompt History
+        <div className="bg-slate-800/80 border-b border-slate-700 p-6 backdrop-blur-sm">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-extrabold text-white flex items-center gap-3">
+              <History size={28} className="text-violet-400" />
+              {t("title")}
             </h2>
             <button
               onClick={onToggle}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="p-2 rounded-lg bg-slate-700 text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-95"
             >
               <EyeOff size={24} />
             </button>
           </div>
 
           {/* Search */}
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <div className="flex-1 relative">
               <Search
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"
-                size={18}
+                className="absolute left-3.5 top-1/2 transform -translate-y-1/2 text-slate-400"
+                size={20}
               />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                placeholder="Search prompts..."
-                className="w-full bg-slate-700 border border-slate-600 rounded-lg pl-10 pr-4 py-2 text-slate-200 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
+                placeholder={t("search")}
+                className="w-full bg-slate-900/50 border border-slate-600 rounded-xl pl-11 pr-4 py-2.5 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent transition-all"
               />
             </div>
             <button
               onClick={handleSearch}
-              className="bg-violet-500 hover:bg-violet-600 text-white px-4 py-2 rounded-lg transition-colors"
+              className="bg-violet-500 hover:bg-violet-600 text-white px-6 py-2.5 rounded-xl font-bold transition-all active:scale-95 shadow-lg shadow-violet-500/20"
             >
-              Search
+              {t("searchBtn")}
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-6 scroll-smooth">
           {loading ? (
-            <div className="flex items-center justify-center h-64">
-              <div className="text-slate-400">Loading history...</div>
+            <div className="flex flex-col items-center justify-center h-64 gap-4">
+              <Loader2 className="animate-spin text-violet-500" size={32} />
+              <div className="text-slate-400 font-medium">{t("loading")}</div>
             </div>
           ) : history.length === 0 ? (
-            <div className="text-center py-12">
-              <History size={48} className="text-slate-600 mx-auto mb-4" />
-              <p className="text-slate-400 text-lg">No prompt history yet</p>
-              <p className="text-slate-500 text-sm mt-2">
-                Start improving prompts to see them here
+            <div className="text-center py-20 animate-in fade-in slide-in-from-bottom-4">
+              <div className="bg-slate-800 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-700">
+                <History size={40} className="text-slate-600" />
+              </div>
+              <p className="text-slate-300 text-xl font-bold">{t("empty")}</p>
+              <p className="text-slate-500 mt-2 max-w-xs mx-auto">
+                {t("emptyDesc")}
               </p>
             </div>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-5">
               {history.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden"
+                  className="bg-slate-800/40 rounded-2xl border border-slate-700/50 overflow-hidden hover:border-slate-600 transition-all hover:bg-slate-800/60 shadow-sm"
                 >
-                  <div className="p-4">
+                  <div className="p-5">
                     {/* Header */}
-                    <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">
-                        <div className="flex items-center gap-3 text-sm text-slate-400 mb-2">
-                          <span className="flex items-center gap-1">
-                            <Calendar size={14} />
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-semibold text-slate-400 uppercase tracking-widest mb-1">
+                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md">
+                            <Calendar size={14} className="text-violet-400" />
                             {formatDate(item.created_at)}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <Cpu size={14} />
+                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md">
+                            <Cpu size={14} className="text-indigo-400" />
                             {item.provider}
                           </span>
-                          <span className="flex items-center gap-1">
-                            <Hash size={14} />
+                          <span className="flex items-center gap-1.5 bg-slate-700/50 px-2 py-1 rounded-md max-w-[200px] truncate">
+                            <Hash size={14} className="text-emerald-400" />
                             {Array.isArray(item.domains)
                               ? item.domains.join(", ")
                               : item.domains}
                           </span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-3">
                         <button
                           onClick={() =>
                             handleCopy(item.improved_prompt, `copy-${item.id}`)
                           }
-                          className="text-slate-400 hover:text-white transition-colors"
+                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-90"
                           title="Copy improved prompt"
                         >
                           {copiedId === `copy-${item.id}` ? (
-                            <Check size={16} className="text-emerald-400" />
+                            <Check size={18} className="text-emerald-400" />
                           ) : (
-                            <Copy size={16} />
+                            <Copy size={18} />
                           )}
                         </button>
                         <button
                           onClick={() => item.id && handleDelete(item.id)}
-                          className="text-slate-400 hover:text-red-400 transition-colors"
+                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all active:scale-90"
                           title="Delete"
                         >
-                          <Trash2 size={16} />
+                          <Trash2 size={18} />
                         </button>
                         <button
                           onClick={() => item.id && toggleExpanded(item.id)}
-                          className="text-slate-400 hover:text-white transition-colors"
+                          className="bg-slate-700/50 p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-600 transition-all active:scale-90"
                           title={
                             item.id && expandedItems.has(item.id)
-                              ? "Show less"
-                              : "Show more"
+                              ? t("showLess")
+                              : t("showMore")
                           }
                         >
                           {item.id && expandedItems.has(item.id) ? (
-                            <EyeOff size={16} />
+                            <EyeOff size={18} />
                           ) : (
-                            <Eye size={16} />
+                            <Eye size={18} />
                           )}
                         </button>
                       </div>
                     </div>
 
                     {/* Content Preview */}
-                    <div className="space-y-3">
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 mb-1">
-                          ORIGINAL PROMPT
+                    <div className="space-y-4">
+                      <div className="bg-slate-900/40 p-3 rounded-xl border border-slate-700/30 shadow-inner">
+                        <p className="text-[10px] font-bold text-slate-500 mb-1.5 uppercase tracking-widest">
+                          {t("originalLabel")}
                         </p>
-                        <p className="text-slate-300 text-sm">
+                        <p className="text-slate-300 text-sm leading-relaxed">
                           {item.id && expandedItems.has(item.id)
                             ? item.original_prompt
                             : truncateText(item.original_prompt)}
                         </p>
                       </div>
 
-                      <div>
-                        <p className="text-xs font-medium text-slate-500 mb-1">
-                          IMPROVED PROMPT
+                      <div className="bg-slate-900/60 p-3 rounded-xl border border-slate-700/50 shadow-inner">
+                        <p className="text-[10px] font-bold text-violet-400 mb-1.5 uppercase tracking-widest">
+                          {t("improvedLabel")}
                         </p>
-                        <p className="text-slate-200 text-sm font-medium">
+                        <p className="text-slate-200 text-sm font-medium leading-relaxed">
                           {item.id && expandedItems.has(item.id)
                             ? item.improved_prompt
                             : truncateText(item.improved_prompt)}
@@ -280,27 +291,27 @@ export default function PromptHistory({
                         expandedItems.has(item.id) &&
                         (item.issues?.length > 0 ||
                           item.improvements?.length > 0) && (
-                          <div className="grid md:grid-cols-2 gap-3 pt-3 border-t border-slate-700">
+                          <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                             {item.issues?.length > 0 && (
-                              <div>
-                                <p className="text-xs font-medium text-amber-400 mb-2">
+                              <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10">
+                                <p className="text-[10px] font-bold text-amber-500 mb-2 uppercase tracking-widest">
                                   Issues Found
                                 </p>
-                                <ul className="space-y-1">
-                                  {item.issues.slice(0, 3).map((issue, i) => (
+                                <ul className="space-y-1.5">
+                                  {item.issues.slice(0, 5).map((issue, i) => (
                                     <li
                                       key={i}
-                                      className="text-xs text-slate-400 flex items-start gap-1"
+                                      className="text-[11px] text-slate-400 flex items-start gap-1.5 leading-snug"
                                     >
-                                      <span className="text-amber-500">
+                                      <span className="text-amber-600 font-bold">
                                         &bull;
                                       </span>
                                       {issue}
                                     </li>
                                   ))}
-                                  {item.issues.length > 3 && (
-                                    <li className="text-xs text-slate-500">
-                                      ...and {item.issues.length - 3} more
+                                  {item.issues.length > 5 && (
+                                    <li className="text-[11px] text-slate-500 italic ml-3">
+                                      ...and {item.issues.length - 5} more
                                     </li>
                                   )}
                                 </ul>
@@ -308,27 +319,27 @@ export default function PromptHistory({
                             )}
 
                             {item.improvements?.length > 0 && (
-                              <div>
-                                <p className="text-xs font-medium text-emerald-400 mb-2">
+                              <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10">
+                                <p className="text-[10px] font-bold text-emerald-500 mb-2 uppercase tracking-widest">
                                   Improvements
                                 </p>
-                                <ul className="space-y-1">
+                                <ul className="space-y-1.5">
                                   {item.improvements
-                                    .slice(0, 3)
+                                    .slice(0, 5)
                                     .map((imp, i) => (
                                       <li
                                         key={i}
-                                        className="text-xs text-slate-400 flex items-start gap-1"
+                                        className="text-[11px] text-slate-400 flex items-start gap-1.5 leading-snug"
                                       >
-                                        <span className="text-emerald-500">
+                                        <span className="text-emerald-600 font-bold">
                                           &#10003;
                                         </span>
                                         {imp}
                                       </li>
                                     ))}
-                                  {item.improvements.length > 3 && (
-                                    <li className="text-xs text-slate-500">
-                                      ...and {item.improvements.length - 3} more
+                                  {item.improvements.length > 5 && (
+                                    <li className="text-[11px] text-slate-500 italic ml-3">
+                                      ...and {item.improvements.length - 5} more
                                     </li>
                                   )}
                                 </ul>

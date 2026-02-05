@@ -1,0 +1,69 @@
+{
+  "common": {
+    "title": "Amélioration de Prompt",
+    "transformPrompts": "Transformez vos Prompts",
+    "subtitle": "Choisissez votre fournisseur d'IA, sélectionnez les domaines, collez votre prompt et obtenez une version optimisée",
+    "loading": "Chargement...",
+    "copy": "Copier",
+    "copied": "Copié !"
+  },
+  "domains": {
+    "label": "Sélectionner le(s) domaine(s)",
+    "programming": "Programmation",
+    "writing": "Écriture",
+    "research": "Recherche",
+    "business": "Affaires",
+    "data": "Analyse de données",
+    "programmingDesc": "Code, débogage, architecture",
+    "writingDesc": "Création, rédaction, contenu",
+    "researchDesc": "Analyse, documents, investigation",
+    "businessDesc": "Stratégie, planification, professionnel",
+    "dataDesc": "Statistiques, visualisation, perspectives"
+  },
+  "modes": {
+    "label": "Mode d'analyse",
+    "standalone": "Indépendant",
+    "standaloneDesc": "Ingénierie complète d'une nouvelle requête",
+    "continuation": "Continuation",
+    "continuationDesc": "Suivi/affinement d'un contenu existant"
+  },
+  "input": {
+    "label": "Prompt d'origine",
+    "placeholder": "Collez votre prompt ici...",
+    "improveBtn": "Améliorer le prompt",
+    "improving": "Amélioration..."
+  },
+  "results": {
+    "issues": "Problèmes trouvés",
+    "improvements": "Améliorations apportées",
+    "improvedPrompt": "Prompt amélioré"
+  },
+  "history": {
+    "title": "Historique des prompts",
+    "search": "Rechercher des prompts...",
+    "searchBtn": "Rechercher",
+    "loading": "Chargement de l'historique...",
+    "empty": "Aucun historique de prompt pour le moment",
+    "emptyDesc": "Commencez à améliorer des prompts pour les voir ici",
+    "showMore": "Afficher plus",
+    "showLess": "Afficher moins",
+    "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce prompt ?",
+    "originalLabel": "PROMPT D'ORIGINE",
+    "improvedLabel": "PROMPT AMÉLIORÉ"
+  },
+  "provider": {
+    "label": "Fournisseur d'IA",
+    "model": "Modèle",
+    "noProviders": "Aucun fournisseur d'IA configuré",
+    "noProvidersDesc": "Veuillez définir au moins une clé API dans votre fichier .env ou vous assurer qu'Ollama est configuré.",
+    "loadingModels": "Chargement des modèles...",
+    "ollamaModels": "Chargement des modèles Ollama...",
+    "noModels": "Aucun modèle disponible (vérifiez la connexion Ollama)",
+    "selectModel": "Sélectionner un modèle...",
+    "anthropicHint": "Nécessite une clé API Anthropic",
+    "openaiHint": "Nécessite une clé API OpenAI",
+    "zhipuHint": "Nécessite une clé API Zhipu",
+    "geminiHint": "Nécessite une clé API Gemini",
+    "ollamaHint": "Nécessite une installation locale d'Ollama"
+  }
+}

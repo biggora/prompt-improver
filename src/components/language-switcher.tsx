@@ -1,0 +1,52 @@
+"use client";
+
+import { useLocale } from "next-intl";
+import { useRouter, usePathname } from "next/navigation";
+import { Globe } from "lucide-react";
+
+export default function LanguageSwitcher() {
+  const locale = useLocale();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const languages = [
+    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "ru", name: "Русский", flag: "🇷🇺" },
+    { code: "de", name: "Deutsch", flag: "🇩🇪" },
+    { code: "fr", name: "Français", flag: "🇫🇷" },
+    { code: "es", name: "Español", flag: "🇪🇸" },
+  ];
+
+  const handleLanguageChange = (newLocale: string) => {
+    // pathname looks like "/en/some-page"
+    // we want to replace the locale part
+    const segments = pathname.split("/");
+    segments[1] = newLocale;
+    const newPathname = segments.join("/");
+    router.push(newPathname);
+  };
+
+  return (
+    <div className="flex items-center gap-2 bg-slate-800/50 rounded-xl px-3 py-1.5 border border-slate-700 backdrop-blur-sm shadow-sm group hover:border-slate-600 transition-all">
+      <Globe
+        size={16}
+        className="text-slate-400 group-hover:text-violet-400 transition-colors"
+      />
+      <select
+        value={locale}
+        onChange={(e) => handleLanguageChange(e.target.value)}
+        className="bg-transparent text-sm text-slate-300 focus:outline-none cursor-pointer font-medium"
+      >
+        {languages.map((lang) => (
+          <option
+            key={lang.code}
+            value={lang.code}
+            className="bg-slate-800 text-slate-200"
+          >
+            {lang.flag} {lang.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}

@@ -1,0 +1,69 @@
+{
+  "common": {
+    "title": "Prompt-Verbesserer",
+    "transformPrompts": "Transformieren Sie Ihre Prompts",
+    "subtitle": "Wählen Sie Ihren KI-Anbieter, wählen Sie Domänen, fügen Sie Ihren Prompt ein und erhalten Sie eine optimierte Version",
+    "loading": "Laden...",
+    "copy": "Kopieren",
+    "copied": "Kopiert!"
+  },
+  "domains": {
+    "label": "Domäne(n) auswählen",
+    "programming": "Programmierung",
+    "writing": "Schreiben",
+    "research": "Forschung",
+    "business": "Business",
+    "data": "Datenanalyse",
+    "programmingDesc": "Code, Debugging, Architektur",
+    "writingDesc": "Kreativ, Copywriting, Inhalt",
+    "researchDesc": "Analyse, Berichte, Untersuchung",
+    "businessDesc": "Strategie, Planung, professionell",
+    "dataDesc": "Statistik, Visualisierung, Einblicke"
+  },
+  "modes": {
+    "label": "Analysemodus",
+    "standalone": "Eigenständig",
+    "standaloneDesc": "Vollständige neue Anfrageentwicklung",
+    "continuation": "Fortsetzung",
+    "continuationDesc": "Follow-up/Verfeinerung bestehender Inhalte"
+  },
+  "input": {
+    "label": "Originaler Prompt",
+    "placeholder": "Fügen Sie Ihren Prompt hier ein...",
+    "improveBtn": "Prompt verbessern",
+    "improving": "Verbesserung läuft..."
+  },
+  "results": {
+    "issues": "Gefundene Probleme",
+    "improvements": "Vorgenommene Verbesserungen",
+    "improvedPrompt": "Verbesserter Prompt"
+  },
+  "history": {
+    "title": "Prompt-Verlauf",
+    "search": "Prompts suchen...",
+    "searchBtn": "Suchen",
+    "loading": "Verlauf wird geladen...",
+    "empty": "Noch kein Prompt-Verlauf",
+    "emptyDesc": "Verbessern Sie Prompts, um sie hier zu sehen",
+    "showMore": "Mehr anzeigen",
+    "showLess": "Weniger anzeigen",
+    "deleteConfirm": "Sind Sie sicher, dass Sie diesen Prompt löschen möchten?",
+    "originalLabel": "ORIGINALER PROMPT",
+    "improvedLabel": "VERBESSERTER PROMPT"
+  },
+  "provider": {
+    "label": "KI-Anbieter",
+    "model": "Modell",
+    "noProviders": "Keine KI-Anbieter konfiguriert",
+    "noProvidersDesc": "Bitte setzen Sie mindestens einen API-Schlüssel in Ihrer .env-Datei oder stellen Sie sicher, dass Ollama konfiguriert ist.",
+    "loadingModels": "Modelle werden geladen...",
+    "ollamaModels": "Ollama-Modelle werden geladen...",
+    "noModels": "Keine Modelle verfügbar (Ollama-Verbindung prüfen)",
+    "selectModel": "Modell auswählen...",
+    "anthropicHint": "Benötigt Anthropic API-Schlüssel",
+    "openaiHint": "Benötigt OpenAI API-Schlüssel",
+    "zhipuHint": "Benötigt Zhipu API-Schlüssel",
+    "geminiHint": "Benötigt Gemini API-Schlüssel",
+    "ollamaHint": "Benötigt lokale Ollama-Installation"
+  }
+}

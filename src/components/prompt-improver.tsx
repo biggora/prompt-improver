@@ -10,9 +10,11 @@ import {
   Lightbulb,
   ArrowRight,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { aiService, AI_PROVIDERS } from "@/lib/ai-service";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
+import LanguageSwitcher from "./language-switcher";
 import type {
   AIModel,
   ImprovePromptResponse,
@@ -26,47 +28,49 @@ interface PromptImproverProps {
 
 interface Domain {
   id: string;
-  label: string;
+  labelKey: string;
   icon: string;
-  description: string;
+  descriptionKey: string;
 }
 
 const DOMAINS: Domain[] = [
   {
     id: "programming",
-    label: "Programming",
+    labelKey: "programming",
     icon: "\uD83D\uDCBB",
-    description: "Code, debugging, architecture",
+    descriptionKey: "programmingDesc",
   },
   {
     id: "writing",
-    label: "Writing",
+    labelKey: "writing",
     icon: "\u270D\uFE0F",
-    description: "Creative, copywriting, content",
+    descriptionKey: "writingDesc",
   },
   {
     id: "research",
-    label: "Research",
+    labelKey: "research",
     icon: "\uD83D\uDD2C",
-    description: "Analysis, papers, investigation",
+    descriptionKey: "researchDesc",
   },
   {
     id: "business",
-    label: "Business",
+    labelKey: "business",
     icon: "\uD83D\uDCBC",
-    description: "Strategy, planning, professional",
+    descriptionKey: "businessDesc",
   },
   {
     id: "data",
-    label: "Data Analysis",
+    labelKey: "data",
     icon: "\uD83D\uDCCA",
-    description: "Statistics, visualization, insights",
+    descriptionKey: "dataDesc",
   },
 ];
 
 export default function PromptImprover({
   configuredProviders,
 }: PromptImproverProps) {
+  const t = useTranslations();
+
   // Find the first available provider
   const availableProviderIds = Object.keys(AI_PROVIDERS).filter(
     (id) => configuredProviders[id],
@@ -148,7 +152,7 @@ export default function PromptImprover({
     setResult(null);
 
     const domainNames = selectedDomains
-      .map((id) => DOMAINS.find((d) => d.id === id)?.label)
+      .map((id) => t(`domains.${id}`))
       .join(", ");
 
     try {
@@ -201,22 +205,22 @@ export default function PromptImprover({
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
+        <div className="flex justify-end mb-4">
+          <LanguageSwitcher />
+        </div>
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-4 py-2 rounded-full text-sm font-medium mb-4 shadow-lg shadow-violet-500/20">
             <Sparkles size={16} />
-            Prompt Improver
+            {t("common.title")}
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Transform Your Prompts
+          <h1 className="text-4xl font-extrabold text-white mb-2 tracking-tight">
+            {t("common.transformPrompts")}
           </h1>
-          <p className="text-slate-400">
-            Choose your AI provider, select domains, paste your prompt, get an
-            optimized version
-          </p>
+          <p className="text-slate-400 text-lg">{t("common.subtitle")}</p>
         </div>
 
         {/* AI Provider and Model Selection */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
+        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
           <ProviderSelector
             selectedProvider={selectedProvider}
             selectedModel={selectedModel}
@@ -229,79 +233,86 @@ export default function PromptImprover({
           {isLoadingModels && (
             <div className="flex items-center gap-2 text-slate-400 text-sm mt-2">
               <Loader2 size={14} className="animate-spin" />
-              Loading Ollama models...
+              {t("provider.ollamaModels")}
             </div>
           )}
         </div>
 
         {/* Domain Selection */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
-          <label className="text-sm font-medium text-slate-300 mb-3 block">
-            Select Domain(s)
+        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
+          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+            {t("domains.label")}
           </label>
           <div className="flex flex-wrap gap-3">
             {DOMAINS.map((domain) => (
               <button
                 key={domain.id}
                 onClick={() => toggleDomain(domain.id)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all ${
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all duration-200 ${
                   selectedDomains.includes(domain.id)
-                    ? "bg-violet-500/20 border-violet-500 text-violet-300 border-2"
-                    : "bg-slate-700/50 border-slate-600 text-slate-300 border hover:border-slate-500"
+                    ? "bg-violet-500/20 border-violet-500 text-violet-300 border-2 shadow-inner"
+                    : "bg-slate-700/50 border-slate-600 text-slate-300 border hover:border-slate-500 hover:bg-slate-700"
                 }`}
+                title={t(`domains.${domain.descriptionKey}`)}
               >
-                <span>{domain.icon}</span>
-                <span className="font-medium">{domain.label}</span>
+                <span className="text-xl">{domain.icon}</span>
+                <span className="font-semibold">
+                  {t(`domains.${domain.labelKey}`)}
+                </span>
               </button>
             ))}
           </div>
         </div>
 
         {/* Analysis Mode Toggle */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
-          <label className="text-sm font-medium text-slate-300 mb-3 block">
-            Analysis Mode
+        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
+          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+            {t("modes.label")}
           </label>
           <div className="flex gap-4">
             <button
               onClick={() => setPromptMode("standalone")}
-              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all text-left ${
+              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                 promptMode === "standalone"
                   ? "bg-violet-500/10 border-violet-500 text-violet-300"
-                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500"
+                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500 hover:bg-slate-700"
               }`}
             >
-              <span className="font-bold text-sm">Standalone</span>
-              <span className="text-xs opacity-70">
-                Complete new request engineering
+              <span className="font-bold text-sm uppercase tracking-wide">
+                {t("modes.standalone")}
+              </span>
+              <span className="text-xs opacity-80 font-medium">
+                {t("modes.standaloneDesc")}
               </span>
             </button>
             <button
               onClick={() => setPromptMode("continuation")}
-              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all text-left ${
+              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all duration-200 text-left ${
                 promptMode === "continuation"
                   ? "bg-violet-500/10 border-violet-500 text-violet-300"
-                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500"
+                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500 hover:bg-slate-700"
               }`}
             >
-              <span className="font-bold text-sm">Continuation</span>
-              <span className="text-xs opacity-70">
-                Follow-up/refinement of previous content
+              <span className="font-bold text-sm uppercase tracking-wide">
+                {t("modes.continuation")}
+              </span>
+              <span className="text-xs opacity-80 font-medium">
+                {t("modes.continuationDesc")}
               </span>
             </button>
           </div>
         </div>
 
         {/* Input */}
-        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
-          <label className="text-sm font-medium text-slate-300 mb-3 block">
-            Original Prompt
+        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700 backdrop-blur-sm">
+          <label className="text-sm font-semibold text-slate-300 mb-3 block uppercase tracking-wider">
+            {t("input.label")}
           </label>
           <textarea
             value={originalPrompt}
             onChange={(e) => setOriginalPrompt(e.target.value)}
-            placeholder="Paste your prompt here..."
-            className="w-full h-40 bg-slate-900/50 border border-slate-600 rounded-xl p-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none"
+            placeholder={t("input.placeholder")}
+            className="w-full h-44 bg-slate-900/50 border border-slate-600 rounded-xl p-4 text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent resize-none transition-all shadow-inner"
           />
           <div className="flex justify-end mt-4">
             <button
@@ -312,17 +323,17 @@ export default function PromptImprover({
                 !selectedModel ||
                 isLoading
               }
-              className="flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-6 py-3 rounded-xl font-medium disabled:opacity-50 disabled:cursor-not-allowed hover:from-violet-600 hover:to-indigo-600 transition-all"
+              className="group flex items-center gap-2 bg-gradient-to-r from-violet-500 to-indigo-500 text-white px-8 py-3.5 rounded-xl font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:from-violet-600 hover:to-indigo-600 transition-all shadow-lg hover:shadow-violet-500/25 active:scale-95"
             >
               {isLoading ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />
-                  Improving...
+                  {t("input.improving")}
                 </>
               ) : (
                 <>
-                  <Sparkles size={18} />
-                  Improve Prompt
+                  <Sparkles size={18} className="group-hover:animate-pulse" />
+                  {t("input.improveBtn")}
                 </>
               )}
             </button>
@@ -331,7 +342,7 @@ export default function PromptImprover({
 
         {/* Error */}
         {error && (
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center gap-3 text-red-400">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 flex items-center gap-3 text-red-400 animate-in fade-in slide-in-from-top-2">
             <AlertCircle size={20} />
             {error}
           </div>
@@ -339,38 +350,42 @@ export default function PromptImprover({
 
         {/* Results */}
         {result && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
             {/* Analysis */}
             <div className="grid md:grid-cols-2 gap-4">
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5">
-                <div className="flex items-center gap-2 text-amber-400 font-medium mb-3">
+              <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center gap-2 text-amber-400 font-bold mb-3 uppercase text-xs tracking-widest">
                   <AlertCircle size={18} />
-                  Issues Found
+                  {t("results.issues")}
                 </div>
                 <ul className="space-y-2">
                   {result.issues?.map((issue, i) => (
                     <li
                       key={i}
-                      className="text-slate-300 text-sm flex items-start gap-2"
+                      className="text-slate-300 text-sm flex items-start gap-2 leading-snug"
                     >
-                      <span className="text-amber-500 mt-1">&bull;</span>
+                      <span className="text-amber-500 mt-1 font-bold">
+                        &bull;
+                      </span>
                       {issue}
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5">
-                <div className="flex items-center gap-2 text-emerald-400 font-medium mb-3">
+              <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-2xl p-5 shadow-sm">
+                <div className="flex items-center gap-2 text-emerald-400 font-bold mb-3 uppercase text-xs tracking-widest">
                   <Lightbulb size={18} />
-                  Improvements Made
+                  {t("results.improvements")}
                 </div>
                 <ul className="space-y-2">
                   {result.improvements?.map((imp, i) => (
                     <li
                       key={i}
-                      className="text-slate-300 text-sm flex items-start gap-2"
+                      className="text-slate-300 text-sm flex items-start gap-2 leading-snug"
                     >
-                      <span className="text-emerald-500 mt-1">&#10003;</span>
+                      <span className="text-emerald-500 mt-0.5 font-bold">
+                        &#10003;
+                      </span>
                       {imp}
                     </li>
                   ))}
@@ -379,30 +394,33 @@ export default function PromptImprover({
             </div>
 
             {/* Improved Prompt */}
-            <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700">
+            <div className="bg-slate-800/50 rounded-2xl p-6 border border-slate-700 backdrop-blur-sm shadow-xl">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-2 text-violet-400 font-medium">
+                <div className="flex items-center gap-2 text-violet-400 font-bold uppercase text-xs tracking-widest">
                   <ArrowRight size={18} />
-                  Improved Prompt
+                  {t("results.improvedPrompt")}
                 </div>
                 <button
                   onClick={copyToClipboard}
-                  className="flex items-center gap-2 text-sm text-slate-400 hover:text-white transition-colors bg-slate-700/50 px-3 py-1.5 rounded-lg"
+                  className="group flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-all bg-slate-700/50 hover:bg-slate-700 px-4 py-2 rounded-lg border border-slate-600"
                 >
                   {copied ? (
                     <>
                       <Check size={16} className="text-emerald-400" />
-                      Copied!
+                      {t("common.copied")}
                     </>
                   ) : (
                     <>
-                      <Copy size={16} />
-                      Copy
+                      <Copy
+                        size={16}
+                        className="group-hover:scale-110 transition-transform"
+                      />
+                      {t("common.copy")}
                     </>
                   )}
                 </button>
               </div>
-              <div className="bg-slate-900/50 rounded-xl p-4 border border-slate-600">
+              <div className="bg-slate-900/50 rounded-xl p-5 border border-slate-600 shadow-inner">
                 <p className="text-slate-200 whitespace-pre-wrap leading-relaxed">
                   {result.improvedPrompt}
                 </p>
