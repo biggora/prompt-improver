@@ -17,6 +17,7 @@ import type {
   AIModel,
   ImprovePromptResponse,
   ConfiguredProviders,
+  PromptMode,
 } from "@/lib/types";
 
 interface PromptImproverProps {
@@ -80,6 +81,7 @@ export default function PromptImprover({
   const [selectedModel, setSelectedModel] = useState(
     initialProvider ? AI_PROVIDERS[initialProvider]?.defaultModel : "",
   );
+  const [promptMode, setPromptMode] = useState<PromptMode>("standalone");
   const [ollamaModels, setOllamaModels] = useState<AIModel[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingModels, setIsLoadingModels] = useState(false);
@@ -155,6 +157,7 @@ export default function PromptImprover({
         domainNames,
         selectedProvider,
         selectedModel,
+        promptMode,
       );
       setResult(result);
 
@@ -167,6 +170,7 @@ export default function PromptImprover({
           domains: selectedDomains,
           provider: selectedProvider,
           model: selectedModel,
+          mode: promptMode,
           issues: result.issues,
           improvements: result.improvements,
         });
@@ -250,6 +254,41 @@ export default function PromptImprover({
                 <span className="font-medium">{domain.label}</span>
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Analysis Mode Toggle */}
+        <div className="bg-slate-800/50 rounded-2xl p-6 mb-6 border border-slate-700">
+          <label className="text-sm font-medium text-slate-300 mb-3 block">
+            Analysis Mode
+          </label>
+          <div className="flex gap-4">
+            <button
+              onClick={() => setPromptMode("standalone")}
+              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all text-left ${
+                promptMode === "standalone"
+                  ? "bg-violet-500/10 border-violet-500 text-violet-300"
+                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500"
+              }`}
+            >
+              <span className="font-bold text-sm">Standalone</span>
+              <span className="text-xs opacity-70">
+                Complete new request engineering
+              </span>
+            </button>
+            <button
+              onClick={() => setPromptMode("continuation")}
+              className={`flex-1 flex flex-col gap-1 p-4 rounded-xl border-2 transition-all text-left ${
+                promptMode === "continuation"
+                  ? "bg-violet-500/10 border-violet-500 text-violet-300"
+                  : "bg-slate-700/50 border-slate-600 text-slate-400 hover:border-slate-500"
+              }`}
+            >
+              <span className="font-bold text-sm">Continuation</span>
+              <span className="text-xs opacity-70">
+                Follow-up/refinement of previous content
+              </span>
+            </button>
           </div>
         </div>
 

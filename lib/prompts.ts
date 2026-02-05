@@ -24,4 +24,8 @@ General improvements to always consider:
 - Include relevant examples if helpful
 - Specify what to avoid
 - Break complex requests into clear steps
-- Add success criteria`;
+- Add success criteria
+
+PROMPT MODES:
+- STANDALONE: Treat the prompt as a completely new request.
+- CONTINUATION: Treat the prompt as a follow-up or adjustment to previous content. Focus on refining or extending existing ideas rather than starting from scratch.`;

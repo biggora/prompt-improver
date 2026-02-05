@@ -78,6 +78,38 @@ describe("API Improve Route", () => {
     expect(data.improvedPrompt).toBe("better");
   });
 
+  it("successfully improves a prompt with mode", async () => {
+    vi.mocked(generateText).mockResolvedValue({
+      text: JSON.stringify({
+        issues: ["i"],
+        improvements: ["imp"],
+        improvedPrompt: "better continuation",
+      }),
+    } as any);
+
+    const req = createRequest({
+      prompt: "good",
+      domainNames: ["WRITING"],
+      providerId: "anthropic",
+      model: "claude-3-5-sonnet-latest",
+      mode: "continuation",
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const data = await res.json();
+    expect(data.improvedPrompt).toBe("better continuation");
+    expect(vi.mocked(generateText)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        messages: expect.arrayContaining([
+          expect.objectContaining({
+            content: expect.stringContaining("Mode: continuation"),
+          }),
+        ]),
+      }),
+    );
+  });
+
   it("handles AI generation failure", async () => {
     vi.mocked(generateText).mockRejectedValue(new Error("AI Hub down"));
 

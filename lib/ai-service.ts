@@ -4,6 +4,7 @@ import type {
   AIProvider,
   ImprovePromptResponse,
   ValidateProviderResponse,
+  PromptMode,
 } from "./types";
 import { SYSTEM_PROMPT } from "./prompts";
 import { parseAIResponse } from "./utils";
@@ -74,9 +75,15 @@ export class AIService {
     domainNames: string | string[],
     providerId: string,
     model: string,
+    mode: PromptMode = "standalone",
   ): Promise<ImprovePromptResponse> {
     if (providerId === "ollama") {
-      return await this.improvePromptWithOllama(prompt, domainNames, model);
+      return await this.improvePromptWithOllama(
+        prompt,
+        domainNames,
+        model,
+        mode,
+      );
     }
 
     try {
@@ -90,6 +97,7 @@ export class AIService {
           domainNames,
           providerId,
           model,
+          mode,
         }),
       });
 
@@ -117,6 +125,7 @@ export class AIService {
     prompt: string,
     domainNames: string | string[],
     model?: string,
+    mode: PromptMode = "standalone",
   ): Promise<ImprovePromptResponse> {
     if (!model) {
       throw new Error("Please select an Ollama model");
@@ -132,7 +141,7 @@ export class AIService {
         },
         body: JSON.stringify({
           model,
-          prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
+          prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\nMode: ${mode}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
           stream: false,
           options: {
             temperature: 0.7,

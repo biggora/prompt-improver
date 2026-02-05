@@ -1,3 +1,4 @@
+export type PromptMode = "standalone" | "continuation";
 export interface AIModel {
   id: string;
   name: string;
@@ -15,6 +16,7 @@ export interface ImprovePromptRequest {
   domainNames: string | string[];
   providerId: string;
   model: string;
+  mode?: PromptMode;
 }
 
 export interface ImprovePromptResponse {
@@ -39,6 +41,7 @@ export interface PromptHistoryRecord {
   domains: string[];
   provider: string;
   model: string;
+  mode?: PromptMode;
   issues: string[];
   improvements: string[];
   created_at: string;

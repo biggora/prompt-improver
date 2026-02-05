@@ -1,6 +1,6 @@
 "use client";
 
-import type { PromptHistoryRecord, PromptStats } from "./types";
+import type { PromptHistoryRecord, PromptStats, PromptMode } from "./types";
 
 const DB_NAME = "PromptImproverDB";
 const DB_VERSION = 1;
@@ -69,6 +69,7 @@ export interface SavePromptData {
   domains: string[];
   provider: string;
   model: string;
+  mode?: PromptMode;
   issues?: string[];
   improvements?: string[];
 }
@@ -90,6 +91,7 @@ export async function savePromptResult(data: SavePromptData): Promise<number> {
       domains: JSON.stringify(data.domains),
       provider: data.provider,
       model: data.model,
+      mode: data.mode || "standalone",
       issues: JSON.stringify(data.issues || []),
       improvements: JSON.stringify(data.improvements || []),
       created_at: new Date().toISOString(),

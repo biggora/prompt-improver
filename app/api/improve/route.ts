@@ -79,7 +79,7 @@ export async function POST(request: NextRequest) {
       messages: [
         {
           role: "user",
-          content: `Domain(s): ${domainLabel}\n\nOriginal prompt to improve:\n${prompt}`,
+          content: `Domain(s): ${domainLabel}\nMode: ${body.mode || "standalone"}\n\nOriginal prompt to improve:\n${prompt}`,
         },
       ],
       maxOutputTokens: 1500,
