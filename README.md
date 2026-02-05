@@ -2,7 +2,7 @@
 
 A Next.js web application that helps users optimize their prompts using AI analysis. Transform your prompts for better results across different domains.
 
-<img width="3676" height="1726" alt="ui" src="https://github.com/user-attachments/assets/9d7d181f-50fe-498c-b6b7-4903a26527e0" />
+<img width="3676" height="2090" alt="prompt-improver-ui_" src="https://github.com/user-attachments/assets/8be3fff2-45a5-49f5-ac8d-95536f3b420b" />
 
 ## 🚀 Features
 
