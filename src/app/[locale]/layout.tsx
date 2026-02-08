@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import "../globals.css";
+import "../../globals.css";
 
 export const metadata: Metadata = {
   title: "Prompt Improver",
@@ -9,6 +9,8 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/theme-provider";
+import { ToastProvider } from "@/components/ui/toast";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 export default async function RootLayout({
   children,
@@ -29,9 +31,13 @@ export default async function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <NextIntlClientProvider locale={locale} messages={messages}>
-            {children}
-          </NextIntlClientProvider>
+          <ErrorBoundary>
+            <ToastProvider>
+              <NextIntlClientProvider locale={locale} messages={messages}>
+                {children}
+              </NextIntlClientProvider>
+            </ToastProvider>
+          </ErrorBoundary>
         </ThemeProvider>
       </body>
     </html>

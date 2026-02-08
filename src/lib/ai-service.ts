@@ -12,6 +12,7 @@ import {
   SYSTEM_PROMPT,
   OLLAMA_DEFAULT_BASE_URL,
 } from "./constants";
+import { withRetry } from "./retry";
 
 // AI Service class
 export class AIService {
@@ -40,40 +41,38 @@ export class AIService {
       );
     }
 
-    try {
-      const response = await fetch("/api/improve", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt,
-          domainNames,
-          providerId,
-          model,
-          mode,
-          responseLanguage,
-        }),
-      });
+    // Wrap the API call with retry logic
+    return withRetry(
+      async () => {
+        const response = await fetch("/api/improve", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            prompt,
+            domainNames,
+            providerId,
+            model,
+            mode,
+            responseLanguage,
+          }),
+        });
 
-      const data = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        throw new Error(data.error || "Server request failed");
-      }
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          // Attach status code to error for retry classification
+          const error = new Error(
+            data.error || "Server request failed",
+          ) as Error & { status?: number };
+          error.status = response.status;
+          throw error;
+        }
 
-      return data;
-    } catch (error) {
-      console.error(`Error with ${providerId}:`, error);
-
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        throw new Error("Cannot reach AI server. Make sure it is running.");
-      }
-
-      const providerName = AI_PROVIDERS[providerId]?.name || providerId;
-      throw new Error(
-        `Failed to improve prompt with ${providerName}: ${error instanceof Error ? error.message : "Unknown error"}`,
-      );
-    }
+        return data;
+      },
+      { maxAttempts: 3 },
+    );
   }
 
   async improvePromptWithOllama(
@@ -89,37 +88,39 @@ export class AIService {
 
     const baseUrl = this.ollamaBaseUrl;
 
-    try {
-      const response = await fetch(`${baseUrl}/api/generate`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model,
-          prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\nMode: ${mode}${responseLanguage ? `\nLanguage: ${responseLanguage}` : ""}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
-          stream: false,
-          options: {
-            temperature: 0.7,
-            max_tokens: 1500,
+    // Wrap the Ollama API call with retry logic
+    return withRetry(
+      async () => {
+        const response = await fetch(`${baseUrl}/api/generate`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            model,
+            prompt: `${SYSTEM_PROMPT}\n\nDomain(s): ${domainNames}\nMode: ${mode}${responseLanguage ? `\nLanguage: ${responseLanguage}` : ""}\n\nOriginal prompt to improve:\n${prompt}\n\nResponse format (JSON only, no markdown):`,
+            stream: false,
+            options: {
+              temperature: 0.7,
+              max_tokens: 1500,
+            },
+          }),
+        });
 
-      const data = await response.json();
-      if (!response.ok || data.error) {
-        throw new Error(data.error || "Ollama API request failed");
-      }
+        const data = await response.json();
+        if (!response.ok || data.error) {
+          // Attach status code to error for retry classification
+          const error = new Error(
+            data.error || "Ollama API request failed",
+          ) as Error & { status?: number };
+          error.status = response.status;
+          throw error;
+        }
 
-      return this.parseResponse(data.response);
-    } catch (error) {
-      if (error instanceof TypeError && error.message.includes("fetch")) {
-        throw new Error(
-          "Cannot connect to Ollama. Make sure Ollama is running at " + baseUrl,
-        );
-      }
-      throw error;
-    }
+        return this.parseResponse(data.response);
+      },
+      { maxAttempts: 2 }, // Fewer retries for local Ollama
+    );
   }
 
   async getOllamaModels(): Promise<{ id: string; name: string }[]> {

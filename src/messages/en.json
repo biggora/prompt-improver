@@ -66,5 +66,13 @@
     "zhipuHint": "Requires Zhipu API key",
     "geminiHint": "Requires Gemini API key",
     "ollamaHint": "Requires local Ollama installation"
+  },
+  "errors": {
+    "authError": "API key not configured. Please check your settings.",
+    "rateLimit": "Rate limited. Retrying...",
+    "network": "Network error. Please check your connection.",
+    "general": "Failed to improve prompt. Please try again.",
+    "copyFailed": "Failed to copy to clipboard",
+    "saveFailed": "Prompt improved but could not save to history"
   }
 }
