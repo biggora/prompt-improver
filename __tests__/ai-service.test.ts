@@ -71,7 +71,7 @@ describe("AIService", () => {
         "anthropic",
         "claude-3-5-sonnet-latest",
       ),
-    ).rejects.toThrow("Anthropic Claude");
+    ).rejects.toThrow("API key missing");
   });
 
   it("throws when ollama model is not provided", async () => {

@@ -139,3 +139,4 @@ dist
 # Electron desktop build artifacts
 /dist-electron/
 /release/
+/opencode.json.tui-migration.bak
