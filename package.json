@@ -102,6 +102,12 @@
     "asarUnpack": [
       "**/node_modules/keytar/**"
     ],
+    "publish": {
+      "provider": "github",
+      "owner": "biggora",
+      "repo": "prompt-improver",
+      "releaseType": "draft"
+    },
     "win": {
       "target": [
         {
