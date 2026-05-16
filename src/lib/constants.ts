@@ -21,11 +21,11 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
     id: "gemini",
     name: "Google Gemini",
     models: [
-      { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash" },
-      { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" },
-      { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash" },
+      { id: "gemini-3.0-pro", name: "Gemini 3.0 Pro" },
+      { id: "gemini-2.5-pro", name: "Gemini 2.5 Pro" },
+      { id: "gemini-2.5-flash", name: "Gemini 2.5 Flash" },
     ],
-    defaultModel: "gemini-2.0-flash",
+    defaultModel: "gemini-2.5-flash",
   },
   openai: {
     id: "openai",
@@ -42,11 +42,11 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
     id: "anthropic",
     name: "Anthropic Claude",
     models: [
-      { id: "claude-sonnet-4-5-20250929", name: "Claude Sonnet 4.5" },
-      { id: "claude-3-5-sonnet-20241022", name: "Claude 3.5 Sonnet" },
-      { id: "claude-3-5-haiku-20241022", name: "Claude 3.5 Haiku" },
+      { id: "claude-opus-4-7", name: "Claude Opus 4.7" },
+      { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6" },
+      { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5" },
     ],
-    defaultModel: "claude-3-5-haiku-20241022",
+    defaultModel: "claude-haiku-4-5-20251001",
   },
   zhipu: {
     id: "zhipu",

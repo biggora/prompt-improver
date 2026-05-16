@@ -52,25 +52,25 @@
 
 1. Get API key from [Anthropic Console](https://console.anthropic.com/)
 2. Add `ANTHROPIC_API_KEY=your_key` to `.env`
-3. Available models: Claude Sonnet 4, Claude 3.5 Sonnet, Claude 3.5 Haiku
+3. Available models: Claude Opus 4.7, Claude Sonnet 4.6, Claude Haiku 4.5
 
 ### For OpenAI:
 
 1. Get API key from [OpenAI Platform](https://platform.openai.com/)
 2. Add `OPENAI_API_KEY=your_key` to `.env`
-3. Available models: GPT-4o, GPT-4o Mini, GPT-4 Turbo, GPT-3.5 Turbo
+3. Available models: GPT-5.5, GPT-5.4, GPT-5.4 Mini, GPT-5.4 Nano
 
 ### For Google Gemini:
 
 1. Get API key from [Google AI Studio](https://aistudio.google.com/)
 2. Add `GEMINI_API_KEY=your_key` to `.env`
-3. Available models: Gemini 2.5 Flash, Gemini 2.5 Pro, Gemini 2.0 Flash
+3. Available models: Gemini 3.0 Pro, Gemini 2.5 Pro, Gemini 2.5 Flash
 
 ### For Zhipu AI (Z.AI):
 
 1. Get API key from [Zhipu AI Platform](https://open.bigmodel.cn/)
 2. Add `ZHIPU_API_KEY=your_key` to `.env`
-3. Available models: GLM-4 Plus, GLM-4, GLM-4 Flash, GLM-4 Air
+3. Available models: GLM-5.1, GLM-5, GLM-5 Turbo, GLM-4.7, GLM-4.7 Flash
 
 ### For Ollama (Local):
 

@@ -7,22 +7,28 @@ A Next.js web application that helps users optimize their prompts using AI analy
 ## 🚀 Features
 
 - **Multi-Provider Support**: Choose from Anthropic Claude, OpenAI, Google Gemini, Zhipu AI, or local Ollama
-- **Domain-Specific Optimization**: Choose from 5 specialized domains (Programming, Writing, Research, Business, Data Analysis)
+- **Domain-Specific Optimization**: 5 specialized domains (Programming, Writing, Research, Business, Data Analysis) — combine any
+- **Prompt Modes**: `standalone` for new requests, `continuation` for refining previous content
+- **Response Language**: Force the AI to return issues / improvements / prompt in your chosen language (en, ru, de, fr, es)
+- **Localized UI**: Interface available in English, Russian, German, French, Spanish (`next-intl`)
+- **Theme Toggle**: Light, dark, and system themes (`next-themes`)
+- **Resilience**: Automatic retry with exponential backoff and an offline request queue
 - **AI-Powered Analysis**: Identifies issues and generates comprehensive improvements
-- **Interactive Results**: See exactly what was changed and why
-- **Prompt History**: Browse and search your previous prompt improvements
+- **Prompt History**: Browse and search previous improvements (stored locally in IndexedDB)
 - **Easy Copy-to-Clipboard**: Instantly copy your optimized prompts
 - **Responsive Design**: Works seamlessly on desktop, tablet, and mobile
-- **Modern UI**: Clean, gradient-based dark theme with smooth interactions
 
 ## 🛠️ Tech Stack
 
-- **Framework**: Next.js 16 with Turbopack
-- **Frontend**: React 19 with TypeScript
+- **Framework**: Next.js 16 (App Router, Turbopack, `output: "standalone"`)
+- **Frontend**: React 19 with TypeScript (strict)
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
-- **AI Integration**: Vercel AI SDK with multiple providers
-- **Database**: IndexedDB (browser-based storage)
+- **AI Integration**: Vercel AI SDK (`ai`, `@ai-sdk/anthropic`, `@ai-sdk/openai`, `@ai-sdk/google`, `zhipu-ai-provider`)
+- **i18n**: `next-intl` with locale-prefixed routing (5 locales)
+- **Theming**: `next-themes` (light / dark / system)
+- **Storage**: IndexedDB in the browser (no backend database)
+- **Testing**: Vitest + jsdom + `fake-indexeddb`
 - **Package Manager**: pnpm
 
 ## 📦 Installation
@@ -35,7 +41,7 @@ cd prompt-improver
 # Install dependencies
 pnpm install
 
-# Copy environment file
+# Copy environment file (use `copy` on Windows cmd, `cp` on PowerShell/bash)
 cp .env.example .env
 
 # Add your API keys to .env file
@@ -43,6 +49,21 @@ cp .env.example .env
 # Start development server
 pnpm run dev
 ```
+
+### Scripts
+
+| Command              | Purpose                                                  |
+| -------------------- | -------------------------------------------------------- |
+| `pnpm run dev`       | Dev server with Turbopack (`http://localhost:3000`)      |
+| `pnpm run build`     | Production build (standalone output)                     |
+| `pnpm run start`     | Serve the production build                               |
+| `pnpm run lint`      | ESLint (flat config)                                     |
+| `pnpm run lint:fix`  | ESLint with `--fix`                                      |
+| `pnpm run typecheck` | `tsc --noEmit`                                           |
+| `pnpm run format`    | Prettier across `ts/tsx/js/jsx/mjs/json/md/yml`          |
+| `pnpm run test`      | Vitest single run                                        |
+| `pnpm run test:watch`| Vitest in watch mode                                     |
+| `pnpm run kill:app`  | Windows-only: free port 3000 (`kill-app.cmd`)            |
 
 ## 🐳 Docker Support
 
@@ -135,27 +156,30 @@ NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
 
 ### AI Providers
 
+> Model lists are defined in `src/lib/constants.ts` (`AI_PROVIDERS`). Update that file to add or change models.
+
 #### 🤖 Anthropic Claude
 
-- **Models**: Claude Opus 4.5, Claude 4.5 Sonnet, Claude 4.5 Haiku
+- **Models**: Claude Opus 4.7, Claude Sonnet 4.6, Claude Haiku 4.5 (default)
 - **Requirements**: Anthropic API key
 - **Setup**: Get API key from [Anthropic Console](https://console.anthropic.com/)
 
 #### 🧠 OpenAI
 
-- **Models**: GPT-5.2, GPT-5.2 Mini, GPT-5.2 Nano, GPT-5
+- **Models**: GPT-5.5, GPT-5.4, GPT-5.4 Mini (default), GPT-5.4 Nano
 - **Requirements**: OpenAI API key
 - **Setup**: Get API key from [OpenAI Platform](https://platform.openai.com/)
+- **Note**: Reasoning models (`gpt-5*`, `o1*`, `o3*`) are detected automatically and the `temperature` parameter is suppressed for them.
 
 #### ✨ Google Gemini
 
-- **Models**: Gemini 2.5 Flash, Gemini 2.5 Pro, Gemini 2.0 Flash
+- **Models**: Gemini 3.0 Pro, Gemini 2.5 Pro, Gemini 2.5 Flash (default)
 - **Requirements**: Gemini API key
 - **Setup**: Get API key from [Google AI Studio](https://aistudio.google.com/)
 
 #### 🌐 Zhipu AI (Z.AI)
 
-- **Models**: GLM-4.7, GLM-4.7 Flash, GLM-4.7 FlashX, GLM-4.5 Air
+- **Models**: GLM-5.1, GLM-5, GLM-5 Turbo (default), GLM-4.7, GLM-4.7 Flash
 - **Requirements**: Zhipu API key
 - **Setup**: Get API key from [Zhipu AI Platform](https://open.bigmodel.cn/)
 
@@ -173,37 +197,59 @@ NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
 
 ```
 prompt-improver/
-├── app/
-│   ├── api/
-│   │   ├── improve/route.ts    # AI improvement endpoint
-│   │   └── validate/route.ts   # API key validation
-│   ├── layout.tsx              # Root layout
-│   └── page.tsx                # Main page
-├── components/
-│   ├── prompt-improver.tsx     # Main component
-│   ├── prompt-history.tsx      # History component
-│   └── provider-selector.tsx   # Provider/model selector
-├── lib/
-│   ├── ai-service.ts           # AI service & providers
-│   ├── database.ts             # IndexedDB storage
-│   ├── prompts.ts              # System prompts
-│   └── types.ts                # TypeScript types
-├── .env.example                # Environment template
-├── package.json                # Dependencies
-└── README.md                   # This file
+├── src/
+│   ├── app/
+│   │   ├── [locale]/
+│   │   │   ├── layout.tsx          # Locale-aware root layout (theme + i18n providers)
+│   │   │   └── page.tsx            # Main page (server component)
+│   │   └── api/
+│   │       ├── improve/route.ts    # Cloud-provider prompt improvement endpoint
+│   │       └── validate/route.ts   # API-key validation endpoint
+│   ├── components/
+│   │   ├── prompt-improver.tsx     # Main client component
+│   │   ├── provider-selector.tsx   # Provider/model selector
+│   │   ├── history.tsx             # Prompt history panel
+│   │   ├── language-switcher.tsx   # UI locale switcher
+│   │   ├── theme-provider.tsx      # next-themes wrapper
+│   │   ├── theme-toggle.tsx        # Light/dark/system toggle
+│   │   ├── error-boundary.tsx      # Global error boundary
+│   │   └── ui/                     # Loading skeletons + toast system
+│   ├── lib/
+│   │   ├── ai-service.ts           # Client-side AI service (cloud + Ollama)
+│   │   ├── constants.ts            # Providers, models, system prompt, domains
+│   │   ├── database.ts             # IndexedDB storage layer
+│   │   ├── provider-config.ts      # server-only env-var resolver
+│   │   ├── retry.ts                # withRetry + error classification
+│   │   ├── request-queue.ts        # Offline request queue
+│   │   ├── types.ts                # TypeScript type definitions
+│   │   └── utils.ts                # cn() + parseAIResponse()
+│   ├── i18n/                       # next-intl config + request handler
+│   ├── messages/                   # en.json, ru.json, de.json, fr.json, es.json
+│   ├── proxy.ts                    # Next.js middleware (named `proxy`, picked up by next-intl plugin)
+│   └── globals.css                 # Tailwind entry
+├── __tests__/                      # Vitest tests (ai-service, api routes, database, utils, prompts)
+├── .env.example                    # Environment template
+├── Dockerfile / docker-compose.yml # Containerized deployment
+├── eslint.config.mjs               # ESLint flat config
+├── vitest.config.ts                # Vitest config (jsdom, fake-indexeddb)
+├── package.json
+└── README.md                       # This file
 ```
 
-## 🚧 Current Status & Roadmap
+## 🚧 Current Status
 
 ### ✅ Completed
 
 - Multi-provider AI integration (Anthropic, OpenAI, Gemini, Zhipu, Ollama)
-- Domain-specific prompt optimization
-- Modern UI with Tailwind CSS dark theme
-- Prompt history with search functionality
-- Copy-to-clipboard functionality
-- Responsive design for all devices
-- Error handling and loading states
+- Domain-specific prompt optimization (`standalone` / `continuation` modes)
+- Configurable response language (5 locales)
+- Localized UI via `next-intl` (en, ru, de, fr, es)
+- Light / dark / system theme via `next-themes`
+- Retry with exponential backoff + offline request queue
+- Prompt history with search (IndexedDB)
+- Error boundary, toast notifications, loading skeletons
+- Copy-to-clipboard, responsive design
+- Vitest test suite (services, API routes, storage, utilities)
 
 ## 🤝 Contributing
 
@@ -215,7 +261,7 @@ prompt-improver/
 
 ## 📄 License
 
-This project is licensed under the ISC License - see the package.json file for details.
+This project is licensed under the MIT License — see the [LICENSE](./LICENSE) file for details.
 
 ## 🐳 Docker Deployment
 
