@@ -135,3 +135,7 @@ dist
 
 /.claude/
 /.playwright-mcp/
+
+# Electron desktop build artifacts
+/dist-electron/
+/release/

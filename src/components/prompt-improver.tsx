@@ -9,14 +9,17 @@ import {
   AlertCircle,
   Lightbulb,
   ArrowRight,
+  Settings,
 } from "lucide-react";
 import { useTranslations, useLocale } from "next-intl";
 import { aiService } from "@/lib/ai-service";
 import { AI_PROVIDERS, SUPPORTED_LANGUAGES, DOMAINS } from "@/lib/constants";
+import { isDesktop } from "@/lib/desktop-bridge";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
 import LanguageSwitcher from "./language-switcher";
 import ThemeToggle from "./theme-toggle";
+import ApiKeysSettings from "./api-keys-settings";
 import { useToast } from "./ui/toast";
 import { isAuthError, isRateLimitError, isNetworkError } from "@/lib/retry";
 import type {
@@ -58,6 +61,12 @@ export default function PromptImprover({
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [desktopMode, setDesktopMode] = useState(false);
+
+  useEffect(() => {
+    setDesktopMode(isDesktop());
+  }, []);
 
   const toggleDomain = (domainId: string) => {
     setSelectedDomains((prev) =>
@@ -203,9 +212,23 @@ export default function PromptImprover({
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-end items-center gap-2 mb-3">
+          {desktopMode && (
+            <button
+              onClick={() => setShowSettings(true)}
+              className="p-2 rounded-lg bg-muted/50 hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
+              aria-label="API key settings"
+              title="API key settings"
+            >
+              <Settings size={16} />
+            </button>
+          )}
           <ThemeToggle />
           <LanguageSwitcher />
         </div>
+        <ApiKeysSettings
+          open={showSettings}
+          onClose={() => setShowSettings(false)}
+        />
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-2 bg-primary text-white px-3 py-1.5 rounded-full text-sm font-medium mb-3 shadow-lg shadow-violet-500/20">
             <Sparkles size={14} />
