@@ -31,11 +31,12 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
     id: "openai",
     name: "OpenAI",
     models: [
-      { id: "gpt-5.2", name: "GPT-5.2" },
-      { id: "gpt-5-mini", name: "GPT-5 Mini" },
-      { id: "gpt-5-nano", name: "GPT-5 Nano" },
+      { id: "gpt-5.5", name: "GPT-5.5" },
+      { id: "gpt-5.4", name: "GPT-5.4" },
+      { id: "gpt-5.4-mini-2026-03-17", name: "GPT-5.4 Mini" },
+      { id: "gpt-5.4-nano-2026-03-17", name: "GPT-5.4 Nano" },
     ],
-    defaultModel: "gpt-5-nano",
+    defaultModel: "gpt-5.4-mini-2026-03-17",
   },
   anthropic: {
     id: "anthropic",
@@ -51,11 +52,13 @@ export const AI_PROVIDERS: Record<string, AIProvider> = {
     id: "zhipu",
     name: "Zhipu AI (Z.AI)",
     models: [
+      { id: "glm-5.1", name: "GLM-5.1" },
+      { id: "glm-5", name: "GLM-5" },
+      { id: "glm-5-turbo", name: "GLM-5 Turbo" },
       { id: "glm-4.7", name: "GLM-4.7" },
       { id: "glm-4.7-flash", name: "GLM-4.7 Flash" },
-      { id: "glm-4-air", name: "GLM-4 Air" },
     ],
-    defaultModel: "glm-4-air",
+    defaultModel: "glm-5-turbo",
   },
   ollama: {
     id: "ollama",

@@ -2,8 +2,25 @@ import { spawn, ChildProcess } from "node:child_process";
 import * as path from "node:path";
 import * as fs from "node:fs";
 import { app } from "electron";
-import getPort from "get-port";
 import * as http from "node:http";
+import { createServer } from "node:net";
+
+function getFreePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const srv = createServer();
+    srv.unref();
+    srv.on("error", reject);
+    srv.listen(0, "127.0.0.1", () => {
+      const addr = srv.address();
+      if (addr && typeof addr === "object") {
+        const port = addr.port;
+        srv.close(() => resolve(port));
+      } else {
+        reject(new Error("Failed to allocate port"));
+      }
+    });
+  });
+}
 
 let serverProcess: ChildProcess | null = null;
 let currentPort: number | null = null;
@@ -57,7 +74,7 @@ export async function startNextServer(opts: StartOptions): Promise<number> {
     throw new Error("Next.js server already running");
   }
 
-  const port = await getPort();
+  const port = await getFreePort();
   const serverJs = resolveStandalonePath();
   const cwd = path.dirname(serverJs);
 

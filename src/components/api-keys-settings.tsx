@@ -11,7 +11,7 @@ type KeyProvider = (typeof KEY_PROVIDERS)[number];
 interface ApiKeysSettingsProps {
   open: boolean;
   onClose: () => void;
-  onSaved?: () => void;
+  onSaved?: () => void | Promise<void>;
 }
 
 export default function ApiKeysSettings({
@@ -91,18 +91,8 @@ export default function ApiKeysSettings({
       for (const p of KEY_PROVIDERS) {
         await bridge.setApiKey(p, values[p]);
       }
-      const result = await bridge.restartServer();
-      if (!result.ok) {
-        setError(result.error);
-        setSaving(false);
-        return;
-      }
-      onSaved?.();
+      await onSaved?.();
       onClose();
-      // Reload renderer so SSR picks up new env on next request
-      if (typeof window !== "undefined") {
-        setTimeout(() => window.location.reload(), 200);
-      }
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {

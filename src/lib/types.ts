@@ -18,6 +18,7 @@ export interface ImprovePromptRequest {
   model: string;
   mode?: PromptMode;
   responseLanguage?: string;
+  apiKey?: string;
 }
 
 export interface ImprovePromptResponse {
@@ -28,6 +29,7 @@ export interface ImprovePromptResponse {
 
 export interface ValidateProviderRequest {
   providerId: string;
+  apiKey?: string;
 }
 
 export interface ValidateProviderResponse {

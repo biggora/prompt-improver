@@ -20,7 +20,8 @@ const providerFactories: Record<string, ProviderFactory> = {
   gemini: (apiKey) => createGoogleGenerativeAI({ apiKey }),
 };
 
-function getApiKey(providerId: string): string | null {
+function resolveApiKey(providerId: string, bodyKey?: string): string | null {
+  if (bodyKey && bodyKey.trim().length > 0) return bodyKey.trim();
   const keyName = PROVIDER_KEY_NAMES[providerId];
   return keyName ? process.env[keyName] || null : null;
 }
@@ -44,12 +45,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const apiKey = getApiKey(providerId);
+    const apiKey = resolveApiKey(providerId, body.apiKey);
     if (!apiKey) {
       const keyName = PROVIDER_KEY_NAMES[providerId] || "API_KEY";
       return NextResponse.json(
         {
-          error: `${providerId} API key is missing. Please set ${keyName} environment variable.`,
+          error: `${providerId} API key is missing. Provide it via desktop Settings or set ${keyName} env variable.`,
         },
         { status: 500 },
       );

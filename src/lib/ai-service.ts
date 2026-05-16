@@ -13,6 +13,18 @@ import {
   OLLAMA_DEFAULT_BASE_URL,
 } from "./constants";
 import { withRetry } from "./retry";
+import { getDesktopBridge } from "./desktop-bridge";
+
+async function getDesktopApiKey(providerId: string): Promise<string | undefined> {
+  const bridge = getDesktopBridge();
+  if (!bridge) return undefined;
+  try {
+    const key = await bridge.getApiKey(providerId);
+    return key ?? undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 // AI Service class
 export class AIService {
@@ -41,6 +53,8 @@ export class AIService {
       );
     }
 
+    const apiKey = await getDesktopApiKey(providerId);
+
     // Wrap the API call with retry logic
     return withRetry(
       async () => {
@@ -56,6 +70,7 @@ export class AIService {
             model,
             mode,
             responseLanguage,
+            apiKey,
           }),
         });
 
@@ -162,6 +177,7 @@ export class AIService {
     }
 
     try {
+      const apiKey = await getDesktopApiKey(providerId);
       const response = await fetch("/api/validate", {
         method: "POST",
         headers: {
@@ -169,6 +185,7 @@ export class AIService {
         },
         body: JSON.stringify({
           providerId,
+          apiKey,
         }),
       });
 

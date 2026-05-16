@@ -14,7 +14,7 @@ import {
 import { useTranslations, useLocale } from "next-intl";
 import { aiService } from "@/lib/ai-service";
 import { AI_PROVIDERS, SUPPORTED_LANGUAGES, DOMAINS } from "@/lib/constants";
-import { isDesktop } from "@/lib/desktop-bridge";
+import { getDesktopBridge, isDesktop } from "@/lib/desktop-bridge";
 import ProviderSelector from "./provider-selector";
 import PromptHistory from "./history";
 import LanguageSwitcher from "./language-switcher";
@@ -34,10 +34,24 @@ interface PromptImproverProps {
 }
 
 export default function PromptImprover({
-  configuredProviders,
+  configuredProviders: initialProviders,
 }: PromptImproverProps) {
   const t = useTranslations();
   const toast = useToast();
+
+  const [configuredProviders, setConfiguredProviders] =
+    useState<ConfiguredProviders>(initialProviders);
+
+  const refreshDesktopProviders = async () => {
+    const bridge = getDesktopBridge();
+    if (!bridge) return;
+    try {
+      const status = await bridge.listProviders();
+      setConfiguredProviders((prev) => ({ ...prev, ...status }));
+    } catch (err) {
+      console.warn("Failed to refresh desktop providers:", err);
+    }
+  };
 
   // Find the first available provider
   const availableProviderIds = Object.keys(AI_PROVIDERS).filter(
@@ -66,6 +80,7 @@ export default function PromptImprover({
 
   useEffect(() => {
     setDesktopMode(isDesktop());
+    refreshDesktopProviders();
   }, []);
 
   const toggleDomain = (domainId: string) => {
@@ -109,9 +124,24 @@ export default function PromptImprover({
     if (configuredProviders.ollamaBaseUrl) {
       aiService.setOllamaBaseUrl(configuredProviders.ollamaBaseUrl as string);
     }
-    handleProviderChange(selectedProvider);
+    if (selectedProvider) {
+      handleProviderChange(selectedProvider);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Auto-select first available provider when configuredProviders changes
+  // (e.g. after refreshDesktopProviders resolves or user saves a new key)
+  useEffect(() => {
+    const available = Object.keys(AI_PROVIDERS).filter(
+      (id) => configuredProviders[id],
+    );
+    if (available.length === 0) return;
+    if (!selectedProvider || !configuredProviders[selectedProvider]) {
+      handleProviderChange(available[0]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [configuredProviders]);
 
   const improvePrompt = async () => {
     if (
@@ -228,6 +258,7 @@ export default function PromptImprover({
         <ApiKeysSettings
           open={showSettings}
           onClose={() => setShowSettings(false)}
+          onSaved={refreshDesktopProviders}
         />
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-2 bg-primary text-white px-3 py-1.5 rounded-full text-sm font-medium mb-3 shadow-lg shadow-violet-500/20">
