@@ -22,7 +22,7 @@ const VALUE = "hello-" + Date.now();
     console.log("[smoke] keychain set/get/delete OK");
     console.log("[smoke] platform:", process.platform);
   } catch (err) {
-    console.error("[smoke] FAILED:", err);
+    console.error("[smoke] FAILED: keychain smoke test error");
     exitCode = 1;
   } finally {
     app.exit(exitCode);
