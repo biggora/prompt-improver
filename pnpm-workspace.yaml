@@ -8,3 +8,8 @@ onlyBuiltDependencies:
   - sharp
   - sqlite3
   - unrs-resolver
+
+overrides:
+  postcss: ^8.5.10
+  picomatch: ^4.0.4
+  flatted: ^3.4.2
