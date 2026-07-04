@@ -9,6 +9,29 @@ function isClient(): boolean {
   return typeof window !== "undefined";
 }
 
+/**
+ * Safely parses a JSON-encoded string array field from an IndexedDB record.
+ * Returns an empty array (and logs a warning) if the value is missing,
+ * corrupt, or not an array, instead of throwing inside an IDB event handler.
+ */
+function safeParseArray(value: unknown): string[] {
+  if (typeof value !== "string") {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(value);
+    if (!Array.isArray(parsed)) {
+      console.warn("Expected array in stored record, got:", typeof parsed);
+      return [];
+    }
+    return parsed;
+  } catch (error) {
+    console.warn("Failed to parse stored array field:", error);
+    return [];
+  }
+}
+
 export function initializeDatabase(): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     if (!isClient()) {
@@ -139,9 +162,9 @@ export async function getPromptHistory(
           const record = cursor.value;
           results.push({
             ...record,
-            domains: JSON.parse(record.domains),
-            issues: JSON.parse(record.issues),
-            improvements: JSON.parse(record.improvements),
+            domains: safeParseArray(record.domains),
+            issues: safeParseArray(record.issues),
+            improvements: safeParseArray(record.improvements),
           });
           cursor.continue();
         } else {
@@ -183,9 +206,9 @@ export async function getPromptById(
 
       resolve({
         ...record,
-        domains: JSON.parse(record.domains),
-        issues: JSON.parse(record.issues),
-        improvements: JSON.parse(record.improvements),
+        domains: safeParseArray(record.domains),
+        issues: safeParseArray(record.issues),
+        improvements: safeParseArray(record.improvements),
       });
     };
 
@@ -256,9 +279,9 @@ export async function searchPrompts(
         if (originalMatch || improvedMatch) {
           results.push({
             ...record,
-            domains: JSON.parse(record.domains),
-            issues: JSON.parse(record.issues),
-            improvements: JSON.parse(record.improvements),
+            domains: safeParseArray(record.domains),
+            issues: safeParseArray(record.issues),
+            improvements: safeParseArray(record.improvements),
           });
         }
 
@@ -290,29 +313,41 @@ export async function getStats(): Promise<PromptStats> {
     const transaction = database.transaction([STORE_NAME], "readonly");
     const store = transaction.objectStore(STORE_NAME);
 
-    const request = store.getAll();
+    const countRequest = store.count();
+    const cursorRequest = store.openCursor();
 
-    request.onsuccess = () => {
-      const records = request.result;
+    let totalPrompts = 0;
+    const providers = new Set<string>();
+    const domainCombinations = new Set<string>();
 
-      const providers = new Set<string>();
-      const domainCombinations = new Set<string>();
-
-      records.forEach((record) => {
-        providers.add(record.provider);
-        domainCombinations.add(record.domains);
-      });
-
-      resolve({
-        total_prompts: records.length,
-        unique_providers: providers.size,
-        unique_domain_combinations: domainCombinations.size,
-      });
+    countRequest.onsuccess = () => {
+      totalPrompts = countRequest.result;
     };
 
-    request.onerror = () => {
-      console.error("Failed to get stats:", request.error);
-      reject(request.error);
+    cursorRequest.onsuccess = (event) => {
+      const cursor = (event.target as IDBRequest<IDBCursorWithValue>).result;
+
+      if (cursor) {
+        providers.add(cursor.value.provider);
+        domainCombinations.add(cursor.value.domains);
+        cursor.continue();
+      } else {
+        resolve({
+          total_prompts: totalPrompts,
+          unique_providers: providers.size,
+          unique_domain_combinations: domainCombinations.size,
+        });
+      }
+    };
+
+    countRequest.onerror = () => {
+      console.error("Failed to get stats:", countRequest.error);
+      reject(countRequest.error);
+    };
+
+    cursorRequest.onerror = () => {
+      console.error("Failed to get stats:", cursorRequest.error);
+      reject(cursorRequest.error);
     };
   });
 }

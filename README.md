@@ -21,6 +21,7 @@ A Next.js web application that helps users optimize their prompts using AI analy
 ## 🛠️ Tech Stack
 
 - **Framework**: Next.js 16 (App Router, Turbopack, `output: "standalone"`)
+- **Desktop**: Electron wrapper (`electron/`) packaged with `electron-builder`
 - **Frontend**: React 19 with TypeScript (strict)
 - **Styling**: Tailwind CSS
 - **Icons**: Lucide React
@@ -64,6 +65,18 @@ pnpm run dev
 | `pnpm run test`      | Vitest single run                                        |
 | `pnpm run test:watch`| Vitest in watch mode                                     |
 | `pnpm run kill:app`  | Windows-only: free port 3000 (`kill-app.cmd`)            |
+| `pnpm electron:dev`  | Run the Electron desktop app in development               |
+| `pnpm dist:win`      | Package the desktop app for Windows (NSIS installer)      |
+| `pnpm dist:mac`      | Package the desktop app for macOS (DMG)                   |
+| `pnpm dist:linux`    | Package the desktop app for Linux (AppImage)               |
+
+## 🖥️ Desktop App (Electron)
+
+The project also ships as a desktop app that wraps the same Next.js UI in Electron and runs the bundled `standalone` server locally.
+
+- **Development**: `pnpm electron:dev` starts the Next.js dev server and an Electron window pointed at it.
+- **Packaging**: `pnpm dist:win`, `pnpm dist:mac`, or `pnpm dist:linux` build the production bundle and produce a platform installer via `electron-builder` (output in `release/`).
+- **API keys**: instead of a `.env` file, the desktop app stores provider API keys securely in the OS keychain (via `keytar`), managed through the in-app Settings dialog.
 
 ## 🐳 Docker Support
 
@@ -197,6 +210,8 @@ NEXT_PUBLIC_OLLAMA_BASE_URL=http://localhost:11434
 
 ```
 prompt-improver/
+├── electron/                       # Electron main process, preload, keychain, dev server bridge
+├── scripts/                        # Build helpers (standalone prep, electron finalize, keychain test)
 ├── src/
 │   ├── app/
 │   │   ├── [locale]/

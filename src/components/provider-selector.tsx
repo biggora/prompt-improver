@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronDown, AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { AI_PROVIDERS } from "@/lib/constants";
 import type { AIModel, ConfiguredProviders } from "@/lib/types";
 
@@ -21,6 +22,7 @@ export default function ProviderSelector({
   ollamaModels = [],
   configuredProviders,
 }: ProviderSelectorProps) {
+  const t = useTranslations("provider");
   const availableProviders = Object.values(AI_PROVIDERS).filter(
     (p) => configuredProviders[p.id],
   );
@@ -39,12 +41,10 @@ export default function ProviderSelector({
         </div>
         <div>
           <h3 className="text-amber-500 dark:text-amber-400 font-semibold mb-1">
-            No AI Providers Configured
+            {t("noProviders")}
           </h3>
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Please set at least one API key in your <code>.env</code> file
-            (e.g., <code>ANTHROPIC_API_KEY</code>, <code>OPENAI_API_KEY</code>)
-            or ensure Ollama is configured to start improving prompts.
+            {t("noProvidersDesc")}
           </p>
         </div>
       </div>
@@ -56,7 +56,7 @@ export default function ProviderSelector({
       {/* Provider Selection */}
       <div className="">
         <label className="text-sm font-medium text-muted-foreground mb-2 block">
-          AI Provider
+          {t("label")}
         </label>
         <div className="relative">
           <select
@@ -80,7 +80,7 @@ export default function ProviderSelector({
       {/* Model Selection */}
       <div className="">
         <label className="text-sm font-medium text-muted-foreground mb-2 block w-full">
-          Model
+          {t("model")}
         </label>
         <div className="relative">
           <select
@@ -92,13 +92,11 @@ export default function ProviderSelector({
             className="w-full bg-background border border-border rounded-xl px-4 py-3 text-foreground appearance-none focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {selectedProvider === "ollama" && ollamaModels.length === 0 ? (
-              <option value="">
-                No models available (check Ollama connection)
-              </option>
+              <option value="">{t("noModels")}</option>
             ) : (
               <>
                 {selectedProvider !== "ollama" && !selectedModel && (
-                  <option value="">Select a model...</option>
+                  <option value="">{t("selectModel")}</option>
                 )}
                 {availableModels.map((model) => (
                   <option key={model.id} value={model.id}>
@@ -116,15 +114,11 @@ export default function ProviderSelector({
 
         {/* Provider-specific hints */}
         <div className="mt-2 text-xs text-muted-foreground">
-          {selectedProvider === "anthropic" && (
-            <p>Requires Anthropic API key</p>
-          )}
-          {selectedProvider === "openai" && <p>Requires OpenAI API key</p>}
-          {selectedProvider === "zhipu" && <p>Requires Zhipu API key</p>}
-          {selectedProvider === "gemini" && <p>Requires Gemini API key</p>}
-          {selectedProvider === "ollama" && (
-            <p>Requires local Ollama installation</p>
-          )}
+          {selectedProvider === "anthropic" && <p>{t("anthropicHint")}</p>}
+          {selectedProvider === "openai" && <p>{t("openaiHint")}</p>}
+          {selectedProvider === "zhipu" && <p>{t("zhipuHint")}</p>}
+          {selectedProvider === "gemini" && <p>{t("geminiHint")}</p>}
+          {selectedProvider === "ollama" && <p>{t("ollamaHint")}</p>}
         </div>
       </div>
     </div>

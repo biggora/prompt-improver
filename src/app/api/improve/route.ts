@@ -4,7 +4,12 @@ import { createAnthropic } from "@ai-sdk/anthropic";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createZhipu } from "zhipu-ai-provider";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
-import { SYSTEM_PROMPT, PROVIDER_KEY_NAMES } from "@/lib/constants";
+import {
+  SYSTEM_PROMPT,
+  PROVIDER_KEY_NAMES,
+  AI_PROVIDERS,
+} from "@/lib/constants";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type { ImprovePromptRequest } from "@/lib/types";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -23,12 +28,32 @@ function resolveApiKey(providerId: string, bodyKey?: string): string | null {
   return keyName ? process.env[keyName] || null : null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractUpstreamStatus(error: any): number | undefined {
+  const status = error?.statusCode ?? error?.status;
+  return typeof status === "number" ? status : undefined;
+}
+
+const RATE_LIMIT_IMPROVE = parseInt(
+  process.env.RATE_LIMIT_IMPROVE || "20",
+  10,
+);
+const RATE_LIMIT_WINDOW_MS = 60000;
+
 import { parseAIResponse } from "@/lib/utils";
 
 export async function POST(request: NextRequest) {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let result: any = null;
   try {
+    const clientKey =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "local";
+    if (!checkRateLimit(clientKey, RATE_LIMIT_IMPROVE, RATE_LIMIT_WINDOW_MS)) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 },
+      );
+    }
+
     const body: ImprovePromptRequest = await request.json();
     const { prompt, domainNames, providerId, model } = body;
 
@@ -53,6 +78,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const allowedModels = AI_PROVIDERS[providerId]?.models.map((m) => m.id);
+    if (
+      typeof model !== "string" ||
+      !allowedModels ||
+      !allowedModels.includes(model)
+    ) {
+      return NextResponse.json(
+        { error: "Unsupported model" },
+        { status: 400 },
+      );
+    }
+
+    if (
+      typeof prompt !== "string" ||
+      prompt.trim().length === 0 ||
+      prompt.length > 32000
+    ) {
+      return NextResponse.json({ error: "Invalid prompt" }, { status: 400 });
+    }
+
+    if (
+      body.mode !== undefined &&
+      body.mode !== "standalone" &&
+      body.mode !== "continuation"
+    ) {
+      return NextResponse.json({ error: "Invalid mode" }, { status: 400 });
+    }
+
+    if (
+      body.responseLanguage !== undefined &&
+      (typeof body.responseLanguage !== "string" ||
+        body.responseLanguage.length > 60)
+    ) {
+      return NextResponse.json(
+        { error: "Invalid responseLanguage" },
+        { status: 400 },
+      );
+    }
+
     const apiKey = resolveApiKey(providerId, body.apiKey);
     if (!apiKey) {
       const keyName = PROVIDER_KEY_NAMES[providerId] || "API_KEY";
@@ -60,14 +124,14 @@ export async function POST(request: NextRequest) {
         {
           error: `${providerId} API key is missing. Provide it via desktop Settings or set ${keyName} env variable.`,
         },
-        { status: 500 },
+        { status: 401 },
       );
     }
 
     const provider = providerFactories[providerId](apiKey);
-    const domainLabel = Array.isArray(domainNames)
-      ? domainNames.join(", ")
-      : domainNames;
+    const domainLabel = (
+      Array.isArray(domainNames) ? domainNames.join(", ") : domainNames
+    ).slice(0, 500);
 
     const languageInstruction = body.responseLanguage
       ? `\nIMPORTANT: All text in the JSON response (issues, improvements, and improvedPrompt) MUST be in ${body.responseLanguage} language.`
@@ -76,7 +140,7 @@ export async function POST(request: NextRequest) {
     const isReasoningModel =
       model.includes("gpt-5") || model.includes("o1") || model.includes("o3");
 
-    result = await generateText({
+    const result = await generateText({
       model: provider(model),
       system: SYSTEM_PROMPT + languageInstruction,
       messages: [
@@ -93,12 +157,32 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(parsed);
   } catch (error) {
     console.error("API improve error:", error);
-    const message = error instanceof Error ? error.message : "Server error";
-    // For debugging JSON issues
-    const debugInfo =
-      error instanceof Error && error.message.includes("JSON")
-        ? ` | Raw: ${result?.text?.substring(0, 500)}`
-        : "";
-    return NextResponse.json({ error: message + debugInfo }, { status: 500 });
+
+    if (
+      error instanceof Error &&
+      (error.message === "No valid JSON object found in response" ||
+        error.message === "Invalid JSON response from AI")
+    ) {
+      return NextResponse.json(
+        { error: "AI returned an unparseable response. Please try again." },
+        { status: 502 },
+      );
+    }
+
+    const upstreamStatus = extractUpstreamStatus(error);
+    if (upstreamStatus === 401 || upstreamStatus === 403) {
+      return NextResponse.json({ error: "Invalid API key" }, { status: 401 });
+    }
+    if (upstreamStatus === 429) {
+      return NextResponse.json(
+        { error: "Provider rate limit exceeded" },
+        { status: 429 },
+      );
+    }
+
+    return NextResponse.json(
+      { error: "Provider request failed" },
+      { status: 500 },
+    );
   }
 }

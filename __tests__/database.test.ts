@@ -110,4 +110,28 @@ describe("database", () => {
       unique_domain_combinations: 2,
     });
   });
+
+  it("resolves with empty arrays instead of hanging on corrupt JSON fields", async () => {
+    const id = await savePromptResult(sampleRecord());
+    const database = await initializeDatabase();
+
+    await new Promise<void>((resolve, reject) => {
+      const transaction = database.transaction("prompt_history", "readwrite");
+      const store = transaction.objectStore("prompt_history");
+      const getRequest = store.get(id);
+
+      getRequest.onsuccess = () => {
+        const record = getRequest.result;
+        record.issues = "{not valid json";
+        const putRequest = store.put(record);
+        putRequest.onsuccess = () => resolve();
+        putRequest.onerror = () => reject(putRequest.error);
+      };
+      getRequest.onerror = () => reject(getRequest.error);
+    });
+
+    const record = await getPromptById(id);
+
+    expect(record?.issues).toEqual([]);
+  });
 });

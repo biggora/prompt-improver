@@ -92,6 +92,15 @@ export default function PromptImprover({
   };
 
   const handleProviderChange = async (providerId: string) => {
+    // Avoid redundant work (and a duplicate Ollama models fetch) when the
+    // provider is already selected and, for Ollama, models are already loaded.
+    if (
+      providerId === selectedProvider &&
+      (providerId !== "ollama" || ollamaModels.length > 0)
+    ) {
+      return;
+    }
+
     setSelectedProvider(providerId);
     const provider = AI_PROVIDERS[providerId];
     setSelectedModel(provider.defaultModel);
@@ -155,7 +164,12 @@ export default function PromptImprover({
     setError(null);
     setResult(null);
 
-    const domainNames = selectedDomains
+    const requestProvider = selectedProvider;
+    const requestModel = selectedModel;
+    const requestDomains = selectedDomains;
+    const requestMode = promptMode;
+
+    const domainNames = requestDomains
       .map((id) => t(`domains.${id}`))
       .join(", ");
 
@@ -163,9 +177,9 @@ export default function PromptImprover({
       const result = await aiService.improvePrompt(
         originalPrompt,
         domainNames,
-        selectedProvider,
-        selectedModel,
-        promptMode,
+        requestProvider,
+        requestModel,
+        requestMode,
         SUPPORTED_LANGUAGES.find((l) => l.code === responseLanguage)?.name ||
           responseLanguage,
       );
@@ -180,16 +194,16 @@ export default function PromptImprover({
         await savePromptResult({
           originalPrompt,
           improvedPrompt: result.improvedPrompt,
-          domains: selectedDomains,
-          provider: selectedProvider,
-          model: selectedModel,
-          mode: promptMode,
+          domains: requestDomains,
+          provider: requestProvider,
+          model: requestModel,
+          mode: requestMode,
           issues: result.issues,
           improvements: result.improvements,
         });
       } catch (dbError) {
         console.error("Failed to save to database:", dbError);
-        toast.warning("Prompt improved but could not save to history");
+        toast.warning(t("errors.saveFailed"));
       }
     } catch (err) {
       const error = err instanceof Error ? err : new Error("Unknown error");
@@ -232,7 +246,7 @@ export default function PromptImprover({
         setTimeout(() => setCopied(false), 2000);
         toast.success(t("common.copied") || "Copied to clipboard!");
       } catch {
-        toast.error("Failed to copy to clipboard");
+        toast.error(t("errors.copyFailed"));
       }
     }
   };
@@ -246,8 +260,8 @@ export default function PromptImprover({
             <button
               onClick={() => setShowSettings(true)}
               className="p-2 rounded-lg bg-muted/50 hover:bg-muted border border-border text-muted-foreground hover:text-foreground transition-colors"
-              aria-label="API key settings"
-              title="API key settings"
+              aria-label={t("settings.openButton")}
+              title={t("settings.openButton")}
             >
               <Settings size={16} />
             </button>

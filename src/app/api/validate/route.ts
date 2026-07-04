@@ -5,6 +5,7 @@ import { createOpenAI } from "@ai-sdk/openai";
 import { createZhipu } from "zhipu-ai-provider";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { PROVIDER_KEY_NAMES, AI_PROVIDERS } from "@/lib/constants";
+import { checkRateLimit } from "@/lib/rate-limit";
 import type {
   ValidateProviderRequest,
   ValidateProviderResponse,
@@ -26,8 +27,32 @@ function resolveApiKey(providerId: string, bodyKey?: string): string | null {
   return keyName ? process.env[keyName] || null : null;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function extractUpstreamStatus(error: any): number | undefined {
+  const status = error?.statusCode ?? error?.status;
+  return typeof status === "number" ? status : undefined;
+}
+
+const RATE_LIMIT_VALIDATE = parseInt(
+  process.env.RATE_LIMIT_VALIDATE || "10",
+  10,
+);
+const RATE_LIMIT_WINDOW_MS = 60000;
+
 export async function POST(request: NextRequest) {
   try {
+    const clientKey =
+      request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      "local";
+    if (
+      !checkRateLimit(clientKey, RATE_LIMIT_VALIDATE, RATE_LIMIT_WINDOW_MS)
+    ) {
+      return NextResponse.json(
+        { error: "Too many requests" },
+        { status: 429 },
+      );
+    }
+
     const body: ValidateProviderRequest = await request.json();
     const { providerId } = body;
 
@@ -52,7 +77,7 @@ export async function POST(request: NextRequest) {
         {
           error: `${providerId} API key is missing. Provide it via desktop Settings or set ${keyName} env variable.`,
         },
-        { status: 500 },
+        { status: 401 },
       );
     }
 
@@ -74,7 +99,22 @@ export async function POST(request: NextRequest) {
     const response: ValidateProviderResponse = { valid: true };
     return NextResponse.json(response);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Server error";
-    return NextResponse.json({ error: message }, { status: 500 });
+    console.error("API validate error:", error);
+
+    const upstreamStatus = extractUpstreamStatus(error);
+    if (upstreamStatus === 401 || upstreamStatus === 403) {
+      return NextResponse.json(
+        { error: "Validation failed" },
+        { status: 401 },
+      );
+    }
+    if (upstreamStatus === 429) {
+      return NextResponse.json(
+        { error: "Validation failed" },
+        { status: 429 },
+      );
+    }
+
+    return NextResponse.json({ error: "Validation failed" }, { status: 500 });
   }
 }

@@ -50,7 +50,10 @@
     "showLess": "Mostrar menos",
     "deleteConfirm": "¿Estás seguro de que quieres eliminar este prompt?",
     "originalLabel": "PROMPT ORIGINAL",
-    "improvedLabel": "PROMPT MEJORADO"
+    "improvedLabel": "PROMPT MEJORADO",
+    "andMore": "...y {count} más",
+    "copyTitle": "Copiar prompt mejorado",
+    "deleteTitle": "Eliminar"
   },
   "provider": {
     "label": "Proveedor de IA",
@@ -66,5 +69,29 @@
     "zhipuHint": "Requiere clave API de Zhipu",
     "geminiHint": "Requiere clave API de Gemini",
     "ollamaHint": "Requiere instalación local de Ollama"
+  },
+  "errors": {
+    "authError": "Clave API no configurada. Por favor, revisa tu configuración.",
+    "rateLimit": "Límite de solicitudes alcanzado. Reintentando...",
+    "network": "Error de red. Por favor, revisa tu conexión.",
+    "general": "No se pudo mejorar el prompt. Por favor, inténtalo de nuevo.",
+    "copyFailed": "No se pudo copiar al portapapeles",
+    "saveFailed": "Prompt mejorado, pero no se pudo guardar en el historial"
+  },
+  "settings": {
+    "openButton": "Ajustes de claves API",
+    "title": "Ajustes",
+    "webOnlyNotice": "La gestión de claves API solo está disponible en la aplicación de escritorio. En la versión web, las claves provienen de variables de entorno del servidor.",
+    "apiKeysTitle": "Claves API",
+    "storageNotice": "Las claves se almacenan en el llavero de tu sistema operativo ({platform}). Solo se envían al servidor local de Next.js al iniciar.",
+    "close": "Cerrar",
+    "loading": "Cargando…",
+    "configured": "Configurada",
+    "keyPlaceholder": "Introduce la clave API de {name}",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "delete": "Eliminar",
+    "cancel": "Cancelar",
+    "saveAndRestart": "Guardar y reiniciar"
   }
 }

@@ -50,7 +50,10 @@
     "showLess": "Afficher moins",
     "deleteConfirm": "Êtes-vous sûr de vouloir supprimer ce prompt ?",
     "originalLabel": "PROMPT D'ORIGINE",
-    "improvedLabel": "PROMPT AMÉLIORÉ"
+    "improvedLabel": "PROMPT AMÉLIORÉ",
+    "andMore": "...et {count} de plus",
+    "copyTitle": "Copier le prompt amélioré",
+    "deleteTitle": "Supprimer"
   },
   "provider": {
     "label": "Fournisseur d'IA",
@@ -66,5 +69,29 @@
     "zhipuHint": "Nécessite une clé API Zhipu",
     "geminiHint": "Nécessite une clé API Gemini",
     "ollamaHint": "Nécessite une installation locale d'Ollama"
+  },
+  "errors": {
+    "authError": "Clé API non configurée. Veuillez vérifier vos paramètres.",
+    "rateLimit": "Limite de requêtes atteinte. Nouvelle tentative...",
+    "network": "Erreur réseau. Veuillez vérifier votre connexion.",
+    "general": "Échec de l'amélioration du prompt. Veuillez réessayer.",
+    "copyFailed": "Échec de la copie dans le presse-papiers",
+    "saveFailed": "Prompt amélioré mais impossible de l'enregistrer dans l'historique"
+  },
+  "settings": {
+    "openButton": "Paramètres des clés API",
+    "title": "Paramètres",
+    "webOnlyNotice": "La gestion des clés API n'est disponible que dans l'application de bureau. Dans la version web, les clés proviennent des variables d'environnement du serveur.",
+    "apiKeysTitle": "Clés API",
+    "storageNotice": "Les clés sont stockées dans le trousseau de votre système d'exploitation ({platform}). Elles ne sont transmises au serveur Next.js local qu'au démarrage.",
+    "close": "Fermer",
+    "loading": "Chargement…",
+    "configured": "Configurée",
+    "keyPlaceholder": "Entrez la clé API {name}",
+    "show": "Afficher",
+    "hide": "Masquer",
+    "delete": "Supprimer",
+    "cancel": "Annuler",
+    "saveAndRestart": "Enregistrer et redémarrer"
   }
 }

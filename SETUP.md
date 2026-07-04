@@ -113,5 +113,5 @@ pnpm run start
 ## Need Help?
 
 - Check the [README.md](./README.md) for full documentation
-- Review [GEMINI.md](./GEMINI.md) for developer/agent-specific guidance
+- Review [CLAUDE.md](./CLAUDE.md) for developer/agent-specific guidance
 - Ensure your API keys are valid and have sufficient quota

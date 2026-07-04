@@ -25,15 +25,33 @@ async function createWindow(targetUrl: string): Promise<void> {
       preload: path.join(__dirname, "preload.js"),
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: false,
+      sandbox: true,
     },
   });
 
   mainWindow.once("ready-to-show", () => mainWindow?.show());
 
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+    try {
+      const parsed = new URL(url);
+      if (["https:", "http:", "mailto:"].includes(parsed.protocol)) {
+        shell.openExternal(url);
+      }
+    } catch {
+      // ignore malformed URLs
+    }
     return { action: "deny" };
+  });
+
+  const appOrigin = new URL(targetUrl).origin;
+  mainWindow.webContents.on("will-navigate", (event, navigationUrl) => {
+    try {
+      if (new URL(navigationUrl).origin !== appOrigin) {
+        event.preventDefault();
+      }
+    } catch {
+      event.preventDefault();
+    }
   });
 
   mainWindow.on("closed", () => {

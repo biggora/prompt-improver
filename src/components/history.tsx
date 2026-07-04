@@ -28,6 +28,7 @@ export default function PromptHistory({
   onToggle,
 }: PromptHistoryProps) {
   const t = useTranslations("history");
+  const tResults = useTranslations("results");
   const locale = useLocale();
   const [history, setHistory] = useState<PromptHistoryRecord[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -236,7 +237,7 @@ export default function PromptHistory({
                             handleCopy(item.improved_prompt, `copy-${item.id}`)
                           }
                           className="bg-accent/50 p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-accent transition-all active:scale-90"
-                          title="Copy improved prompt"
+                          title={t("copyTitle")}
                         >
                           {copiedId === `copy-${item.id}` ? (
                             <Check
@@ -250,7 +251,7 @@ export default function PromptHistory({
                         <button
                           onClick={() => item.id && handleDelete(item.id)}
                           className="bg-accent/50 p-2 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all active:scale-90"
-                          title="Delete"
+                          title={t("deleteTitle")}
                         >
                           <Trash2 size={18} />
                         </button>
@@ -304,7 +305,7 @@ export default function PromptHistory({
                             {item.issues?.length > 0 && (
                               <div className="bg-amber-500/5 p-3 rounded-xl border border-amber-500/10">
                                 <p className="text-[10px] font-bold text-amber-500 mb-2 uppercase tracking-widest">
-                                  Issues Found
+                                  {tResults("issues")}
                                 </p>
                                 <ul className="space-y-1.5">
                                   {item.issues.slice(0, 5).map((issue, i) => (
@@ -320,7 +321,7 @@ export default function PromptHistory({
                                   ))}
                                   {item.issues.length > 5 && (
                                     <li className="text-[11px] text-slate-500 italic ml-3">
-                                      ...and {item.issues.length - 5} more
+                                      {t("andMore", { count: item.issues.length - 5 })}
                                     </li>
                                   )}
                                 </ul>
@@ -330,7 +331,7 @@ export default function PromptHistory({
                             {item.improvements?.length > 0 && (
                               <div className="bg-emerald-500/5 p-3 rounded-xl border border-emerald-500/10">
                                 <p className="text-[10px] font-bold text-emerald-500 mb-2 uppercase tracking-widest">
-                                  Improvements
+                                  {tResults("improvements")}
                                 </p>
                                 <ul className="space-y-1.5">
                                   {item.improvements
@@ -348,7 +349,9 @@ export default function PromptHistory({
                                     ))}
                                   {item.improvements.length > 5 && (
                                     <li className="text-[11px] text-slate-500 italic ml-3">
-                                      ...and {item.improvements.length - 5} more
+                                      {t("andMore", {
+                                        count: item.improvements.length - 5,
+                                      })}
                                     </li>
                                   )}
                                 </ul>

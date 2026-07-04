@@ -50,7 +50,10 @@
     "showLess": "Weniger anzeigen",
     "deleteConfirm": "Sind Sie sicher, dass Sie diesen Prompt löschen möchten?",
     "originalLabel": "ORIGINALER PROMPT",
-    "improvedLabel": "VERBESSERTER PROMPT"
+    "improvedLabel": "VERBESSERTER PROMPT",
+    "andMore": "...und {count} weitere",
+    "copyTitle": "Verbesserten Prompt kopieren",
+    "deleteTitle": "Löschen"
   },
   "provider": {
     "label": "KI-Anbieter",
@@ -66,5 +69,29 @@
     "zhipuHint": "Benötigt Zhipu API-Schlüssel",
     "geminiHint": "Benötigt Gemini API-Schlüssel",
     "ollamaHint": "Benötigt lokale Ollama-Installation"
+  },
+  "errors": {
+    "authError": "API-Schlüssel nicht konfiguriert. Bitte überprüfen Sie Ihre Einstellungen.",
+    "rateLimit": "Ratenlimit erreicht. Erneuter Versuch...",
+    "network": "Netzwerkfehler. Bitte überprüfen Sie Ihre Verbindung.",
+    "general": "Prompt konnte nicht verbessert werden. Bitte versuchen Sie es erneut.",
+    "copyFailed": "Kopieren in die Zwischenablage fehlgeschlagen",
+    "saveFailed": "Prompt verbessert, konnte aber nicht im Verlauf gespeichert werden"
+  },
+  "settings": {
+    "openButton": "API-Schlüssel-Einstellungen",
+    "title": "Einstellungen",
+    "webOnlyNotice": "Die Verwaltung von API-Schlüsseln ist nur in der Desktop-App verfügbar. In der Web-Version stammen die Schlüssel aus Umgebungsvariablen auf dem Server.",
+    "apiKeysTitle": "API-Schlüssel",
+    "storageNotice": "Schlüssel werden in Ihrem Betriebssystem-Schlüsselbund ({platform}) gespeichert. Sie werden erst beim Start in den lokalen Next.js-Server eingespeist.",
+    "close": "Schließen",
+    "loading": "Wird geladen…",
+    "configured": "Konfiguriert",
+    "keyPlaceholder": "{name} API-Schlüssel eingeben",
+    "show": "Anzeigen",
+    "hide": "Verbergen",
+    "delete": "Löschen",
+    "cancel": "Abbrechen",
+    "saveAndRestart": "Speichern & Neustarten"
   }
 }

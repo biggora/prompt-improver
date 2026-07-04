@@ -43,4 +43,30 @@ describe("parseAIResponse", () => {
     const input = '{"unclosed": "brace"';
     expect(() => parseAIResponse(input)).toThrow("No valid JSON object found");
   });
+
+  it("extracts JSON when prose braces surround it", () => {
+    const input =
+      'Note {x} then {"issues":[],"improvements":[],"improvedPrompt":"ok"}';
+    const result = parseAIResponse(input);
+    expect(result.improvedPrompt).toBe("ok");
+  });
+
+  it("prefers the candidate containing improvedPrompt when multiple JSON blocks exist", () => {
+    const input =
+      '{"foo":1} then {"issues":[],"improvements":[],"improvedPrompt":"winner"}';
+    const result = parseAIResponse(input);
+    expect(result.improvedPrompt).toBe("winner");
+  });
+
+  it("throws when valid JSON is missing improvedPrompt", () => {
+    const input = '{"issues":[],"improvements":[]}';
+    expect(() => parseAIResponse(input)).toThrow("Invalid JSON response");
+  });
+
+  it("defaults issues and improvements to empty arrays when missing or invalid", () => {
+    const input = '{"improvedPrompt":"ok","issues":"not-an-array"}';
+    const result = parseAIResponse(input);
+    expect(result.issues).toEqual([]);
+    expect(result.improvements).toEqual([]);
+  });
 });

@@ -18,6 +18,7 @@ export interface QueuedRequest {
 }
 
 const STORAGE_KEY = "prompt_improver_request_queue";
+const MAX_ATTEMPTS = 5;
 
 /**
  * Request Queue Manager
@@ -28,6 +29,9 @@ export class RequestQueue {
   private isOnline: boolean = true;
   private processing: boolean = false;
   private listeners: Set<(queue: QueuedRequest[]) => void> = new Set();
+  private executor:
+    | ((request: ImprovePromptRequest) => Promise<unknown>)
+    | null = null;
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -60,7 +64,14 @@ export class RequestQueue {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
-        this.queue = JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        this.queue = Array.isArray(parsed) ? parsed : [];
+        // Recover items that were mid-flight when the tab closed/crashed.
+        this.queue.forEach((item) => {
+          if (item.status === "processing") {
+            item.status = "pending";
+          }
+        });
         this.notifyListeners();
       }
     } catch (error) {
@@ -88,13 +99,28 @@ export class RequestQueue {
   }
 
   /**
+   * Generates a unique id for a queued request.
+   */
+  private generateId(): string {
+    const suffix =
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : Math.random().toString(36).slice(2, 11);
+    return `req_${Date.now()}_${suffix}`;
+  }
+
+  /**
    * Add a request to the queue
    */
   add(request: ImprovePromptRequest): string {
+    // Never persist API keys to localStorage.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { apiKey: _apiKey, ...safeRequest } = request;
+
     const queuedRequest: QueuedRequest = {
-      id: `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      id: this.generateId(),
       timestamp: Date.now(),
-      request,
+      request: safeRequest,
       status: "pending",
       attempts: 0,
     };
@@ -112,12 +138,31 @@ export class RequestQueue {
   }
 
   /**
+   * Register the executor used to actually run queued requests when
+   * processQueue() is called without one explicitly (e.g. from online
+   * events, add(), retry(), retryAll()).
+   */
+  setExecutor(
+    executor: (request: ImprovePromptRequest) => Promise<unknown>,
+  ): void {
+    this.executor = executor;
+  }
+
+  /**
    * Process the queue
    */
   async processQueue(
     executor?: (request: ImprovePromptRequest) => Promise<unknown>,
   ): Promise<void> {
     if (this.processing || !this.isOnline) {
+      return;
+    }
+
+    const activeExecutor = executor ?? this.executor;
+    if (!activeExecutor) {
+      console.warn(
+        "processQueue called without an executor; skipping until setExecutor() is called.",
+      );
       return;
     }
 
@@ -130,15 +175,21 @@ export class RequestQueue {
         break;
       }
 
+      if (queuedRequest.attempts >= MAX_ATTEMPTS) {
+        queuedRequest.status = "failed";
+        queuedRequest.lastError = "Max attempts exceeded";
+        this.saveQueue();
+        this.notifyListeners();
+        continue;
+      }
+
       queuedRequest.status = "processing";
       queuedRequest.attempts++;
       this.saveQueue();
       this.notifyListeners();
 
       try {
-        if (executor) {
-          await executor(queuedRequest.request);
-        }
+        await activeExecutor(queuedRequest.request);
 
         // Remove successfully processed request
         this.remove(queuedRequest.id);
@@ -181,6 +232,7 @@ export class RequestQueue {
     const request = this.queue.find((r) => r.id === id);
     if (request) {
       request.status = "pending";
+      request.attempts = 0;
       request.lastError = undefined;
       this.saveQueue();
       this.notifyListeners();
@@ -198,6 +250,7 @@ export class RequestQueue {
     this.queue.forEach((request) => {
       if (request.status === "failed") {
         request.status = "pending";
+        request.attempts = 0;
         request.lastError = undefined;
       }
     });
